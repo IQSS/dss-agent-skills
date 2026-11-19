@@ -1,0 +1,119 @@
+[
+  {
+    "name": "scaffold",
+    "group": "Set up and plan",
+    "title": "Set up a project",
+    "summary": "Ask the agent to create or adapt folders, project guidance, and runnable commands for a new piece of work.",
+    "requirements": "Filesystem access. Git and language-specific setup tools are used when the project needs them.",
+    "prompt": "/dss-agent-skills:scaffold\nCreate a paper project for a study of school attendance. Propose a suitable layout, preserve any existing files, and ask about missing research decisions.",
+    "outcomes": [
+      "Selects a supplied template or adapts a bundled example.",
+      "Creates the agreed folder structure and project context files.",
+      "Checks that the resulting layout and commands fit the project."
+    ]
+  },
+  {
+    "name": "review-plan",
+    "group": "Set up and plan",
+    "title": "Review a research plan",
+    "summary": "Find consequential gaps, unsupported assumptions, and missing checks before committing to the work.",
+    "requirements": "A plan or proposal. A separate reviewer session is needed for an independent review.",
+    "prompt": "/dss-agent-skills:review-plan analysis-plan.md\nReview whether this plan can answer the research question with the available data. Identify the most consequential gaps and explain how to address them.",
+    "outcomes": [
+      "Reads the plan against its stated goals and applicable project conventions.",
+      "Uses a fresh reviewer when the host supports one and reports the isolation achieved.",
+      "Writes a review brief separating demonstrated problems, alternatives, and open questions."
+    ]
+  },
+  {
+    "name": "dag",
+    "group": "Set up and plan",
+    "title": "Draw a causal diagram",
+    "summary": "Turn a supplied causal graph into a clear figure, with adjustment sets checked against the graph.",
+    "requirements": "R with dagitty; XeLaTeX with TikZ and standalone; a PDF rasterizer or viewer.",
+    "prompt": "/dss-agent-skills:dag study.dag --exposure heat --outcome birthweight\nCheck the available adjustment sets and render a figure from this graph. Preserve the causal structure.",
+    "outcomes": [
+      "Identifies exposure, outcome, and other node roles from the supplied graph.",
+      "Computes adjustment sets with dagitty and distinguishes alternatives.",
+      "Builds and inspects a PDF, refining labels and connections."
+    ]
+  },
+  {
+    "name": "litsearch",
+    "group": "Explore and assess",
+    "title": "Find research literature",
+    "summary": "Keep the queries, screening decisions, reading limits, and citation checks behind a literature search.",
+    "requirements": "Python 3.9+ and permitted access to the selected literature sources. Full-text availability depends on your access.",
+    "prompt": "/dss-agent-skills:litsearch\nFind studies of maternal heat exposure and birthweight. Start with OpenAlex, Crossref, and PubMed. Record the search scope, screening decisions, and whether each paper was read in full or only as an abstract.",
+    "outcomes": [
+      "Records the research question, search scope, queries, and retrieved responses.",
+      "Screens retrieved papers and assembles an evidence table.",
+      "Checks citation metadata and saves BibTeX and RIS bibliographies."
+    ]
+  },
+  {
+    "name": "eda",
+    "group": "Explore and assess",
+    "title": "Explore a dataset",
+    "summary": "Generate a first-look report on distributions, missing values, and relationships worth investigating.",
+    "requirements": "R and Quarto, the R packages listed in the bundled template, and XeLaTeX for PDF output.",
+    "prompt": "/dss-agent-skills:eda data/birth-records.csv outcome=birthweight exposures=hot_days grouping=smoking\nCreate an exploratory report and flag data-quality issues that need investigation.",
+    "outcomes": [
+      "Checks that the input and named variables can be read.",
+      "Builds an exploratory report using the supplied Quarto template.",
+      "Reports the output location, included sections, and any failures that need attention."
+    ]
+  },
+  {
+    "name": "review-analysis",
+    "group": "Explore and assess",
+    "title": "Review an analysis",
+    "summary": "Check whether analysis code follows the scientific requirements and supports the quantities it reports.",
+    "requirements": "Analysis code, its scientific specification, and available saved evidence. A separate reviewer session is needed for an independent review.",
+    "prompt": "/dss-agent-skills:review-analysis code/\nReview this analysis against the project specification. Check the reported contrasts, uncertainty calculations, diagnostics, and reproducibility. Do not change or run the analysis.",
+    "outcomes": [
+      "Traces the implementation against the research requirements.",
+      "Examines statistical choices, relevant causal assumptions, and saved diagnostics.",
+      "Writes findings with evidence and limitations; a static review does not establish that code runs correctly."
+    ]
+  },
+  {
+    "name": "targets",
+    "group": "Run and refine",
+    "title": "Build a repeatable R pipeline",
+    "summary": "Organize an R analysis into stages so completed, unchanged work can be reused when the pipeline runs again.",
+    "requirements": "R with targets; crew for parallel workers when needed. Uses the project's existing software environment.",
+    "prompt": "/dss-agent-skills:targets\nTurn the data preparation, model fitting, and figure generation into a targets pipeline. Make the input files explicit dependencies and check which stages rerun after a figure-only change.",
+    "outcomes": [
+      "Defines independently runnable stages with explicit dependencies.",
+      "Runs and inspects the pipeline using the project's environment.",
+      "Diagnoses unnecessary reruns and explains what can resume after interruption."
+    ]
+  },
+  {
+    "name": "pueue",
+    "group": "Run and refine",
+    "title": "Queue computational jobs",
+    "summary": "Let independent computational jobs run with controlled concurrency while the agent tracks progress and outcomes.",
+    "requirements": "The Pueue client and a running daemon; jq for the illustrated status queries. Each job needs its own working environment.",
+    "prompt": "/dss-agent-skills:pueue\nQueue the project's simulation commands with two concurrent jobs. Save their IDs and check the logs and expected output files before reporting completion.",
+    "outcomes": [
+      "Prepares commands with explicit working directories and environments.",
+      "Submits the authorized jobs and records their queue IDs.",
+      "Checks actual outcomes, distinguishing a finished queue entry from verified output."
+    ]
+  },
+  {
+    "name": "review-prose",
+    "group": "Run and refine",
+    "title": "Review prose for clarity",
+    "summary": "Find passages readers have to decode and assess proposed revisions in the surrounding paragraph.",
+    "requirements": "Python 3.9+ for the supplied detector and a Markdown or plain-text draft.",
+    "prompt": "/dss-agent-skills:review-prose manuscript.md\nReview the prose for clarity. Explain why each consequential passage is difficult to read and propose a clearer version without editing the manuscript.",
+    "outcomes": [
+      "Scans for selected patterns associated with unclear or overly compressed prose.",
+      "Reviews each hit in context, discarding false positives.",
+      "Reports proposed revisions for the author to consider."
+    ]
+  }
+]

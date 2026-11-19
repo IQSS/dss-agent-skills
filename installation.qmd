@@ -1,0 +1,40 @@
+---
+title: "Install and use the skills"
+---
+
+The collection is available as a Claude Code plugin or as individual skill folders. A plugin groups the nine skills into one installation.
+
+## Install in Claude Code
+
+In a Claude Code session, enter these commands to add the collection and open its installation panel:
+
+```bash
+/plugin marketplace add IQSS/dss-agent-skills
+/plugin install dss-agent-skills@dss-agent-skills
+```
+
+Review the plugin and choose the installation scope offered by the app. Installing for yourself makes it available across your projects. Adding the marketplace alone does not install the plugin. Follow any reload instructions shown by your app.
+
+Then invoke a skill by name. For example:
+
+```bash
+/dss-agent-skills:review-prose manuscript.md
+```
+
+Tell the agent which files to use and what you want to accomplish. It should check the skill's software requirements and use your project's existing conventions. Installing a skill does not install R, Quarto, or other tools the task may require.
+
+The [Claude Code installation documentation](https://code.claude.com/docs/en/discover-plugins) explains scopes, updates, and app-specific controls.
+
+## Use an individual skill
+
+Each [skill page](index.qmd) has a ZIP download containing that skill and its supporting files. Extract the folder and install it in a skill location supported by your agent app. Keep the folder's contents together.
+
+The collection follows the [Agent Skills format](https://agentskills.io/specification). Apps differ in how they find and invoke skills, and in whether they can launch separate reviewer sessions. Ask the agent to identify the supported installation location and any missing capabilities before using a downloaded skill.
+
+## Update the collection
+
+Use Claude Code's plugin management controls to update the installed plugin. With individual downloads, replace the installed folder with the newer reviewed version, preserving any local adaptations you need.
+
+## What has been checked
+
+The collection passes skill-format checks, helper regression tests, and Claude Code installation and discovery checks. Research outcomes still need the checks appropriate to the task. A citation metadata check does not establish that a paper supports a claim; a code review does not replace running the code or assessing its methodology.

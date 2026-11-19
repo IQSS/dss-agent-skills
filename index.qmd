@@ -1,0 +1,20 @@
+---
+title: "DSS agent skills"
+subtitle: "Reusable tasks for research with AI agents"
+toc: false
+---
+
+A skill gives an agent instructions for a recurring task, together with any scripts or templates it needs. Choose one for the work at hand: setting up a project, finding literature, reviewing an analysis, or running a reproducible workflow.
+
+::: {.catalogue-intro}
+[Install in Claude Code](installation.qmd){.btn .btn-primary}
+[Download all nine skills](downloads/dss-agent-skills.zip){.btn .btn-outline-primary}
+
+Each skill page explains its purpose, requirements, and an example prompt. You direct the research; the agent carries out the task using the access you provide.
+:::
+
+{{< include _catalogue.qmd >}}
+
+## Learn the workflow
+
+[Doing Research with AI Agents](https://iqss.github.io/dss-agentic-research/) explains how to organize, check, and document research with an agent. [Extending Your Agent’s Toolkit](https://iqss.github.io/dss-agentic-toolkit/) covers the tools behind those workflows.

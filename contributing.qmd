@@ -1,0 +1,17 @@
+---
+title: "Contribute a skill"
+---
+
+The collection welcomes skills that help researchers carry out a recurring task with an AI agent. You can suggest a new skill, report a problem, or improve an existing one through the [GitHub repository](https://github.com/IQSS/dss-agent-skills).
+
+## Propose a useful task
+
+Explain who the skill is for, when to use it, and what it produces. Include an example prompt and state any required software or agent capabilities.
+
+Keep the instructions adaptable to the researcher's project. A skill should work without the contributor's personal accounts, paths, aliases, or machine settings.
+
+## Submit a change
+
+Start from the latest repository version and open a pull request with the relevant skill and supporting files. Describe the change, the example used to test it, and any remaining limitations. Maintainers review changes before including them in the collection.
+
+The [contribution instructions](https://github.com/IQSS/dss-agent-skills/blob/main/CONTRIBUTING.md) explain the repository checks and catalogue entries. The collection is released under the [MIT license](https://github.com/IQSS/dss-agent-skills/blob/main/LICENSE).

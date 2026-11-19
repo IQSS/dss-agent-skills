@@ -1,0 +1,48 @@
+project:
+  type: dss-theme
+  output-dir: _site
+  pre-render:
+    - python3 scripts/build-catalogue.py
+  render:
+    - index.qmd
+    - installation.qmd
+    - contributing.qmd
+    - 404.qmd
+    - "skills/*.qmd"
+  resources:
+    - "downloads/*.zip"
+
+website:
+  title: "DSS agent skills"
+  site-url: https://iqss.github.io/dss-agent-skills/
+  repo-url: https://github.com/IQSS/dss-agent-skills
+  description: "Reusable skills for research with AI coding agents, from IQSS Data Science Services."
+  sidebar:
+    style: floating
+    search: true
+    contents:
+      - text: Browse skills
+        href: index.qmd
+      - installation.qmd
+      - contributing.qmd
+      - section: Skills
+        contents:
+          - skills/scaffold.qmd
+          - skills/review-plan.qmd
+          - skills/dag.qmd
+          - skills/litsearch.qmd
+          - skills/eda.qmd
+          - skills/review-analysis.qmd
+          - skills/targets.qmd
+          - skills/pueue.qmd
+          - skills/review-prose.qmd
+
+format:
+  dss-theme-html:
+    css: catalogue.css
+    toc: true
+    code-copy: true
+    code-overflow: wrap
+    link-external-newwindow: false
+    execute:
+      enabled: false

@@ -1,0 +1,20 @@
+{
+  "name": "dss-agent-skills",
+  "version": "0.2.0",
+  "author": {
+    "name": "IQSS Data Science Services"
+  },
+  "description": "Skills for research workflows: literature searches, exploratory analysis, diagrams, review, scaffolding, and reproducible computation.",
+  "license": "MIT",
+  "skills": [
+    "./dag",
+    "./eda",
+    "./litsearch",
+    "./pueue",
+    "./review-analysis",
+    "./review-plan",
+    "./review-prose",
+    "./scaffold",
+    "./targets"
+  ]
+}

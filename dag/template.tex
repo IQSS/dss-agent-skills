@@ -1,0 +1,129 @@
+% DAG figure — TikZ standalone with configurable node and edge styles.
+% Single source of truth for the /dag skill's palette, node/edge styles, and
+% legend helpers. The skill fills the injection points marked << >> below by
+% regenerating from the .dag source — don't hand-edit those; rerun /dag.
+%
+% Build (fontspec + Inter -> xelatex, run TWICE so node positions settle):
+%   TEXMFVAR=$TMPDIR/texmf-var TEXMFCACHE=$TMPDIR/texmf-cache \
+%     xelatex -interaction=nonstopmode <stem>.tex   # then again
+% Output: <stem>.pdf.
+%
+% Font: Inter, with Latin Modern Sans as the fallback.
+
+\documentclass[border=12pt]{standalone}
+\usepackage{fontspec}
+\IfFontExistsTF{Inter}{\setsansfont{Inter}}{\setsansfont{Latin Modern Sans}}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, fit, backgrounds, calc}
+
+% ---- default palette ----
+\definecolor{stageSetup}{HTML}{CFD8EA} % blue   - outcome fill
+\definecolor{stageLang}{HTML}{CFDFCD}  % green  - exposure fill
+\definecolor{stageAuth}{HTML}{E3C2BC}  % salmon - adjustment-set (msas) fill
+\definecolor{stageMed}{HTML}{F6E2BE}   % amber  - mediator fill
+\definecolor{stageOut}{HTML}{D9D9D9}   % grey   - latent fill
+\definecolor{dark}{HTML}{1E293B}       % node text
+\definecolor{slate}{HTML}{64748B}      % default stroke / grey edges
+\definecolor{linegreen}{HTML}{3F7E4E}  % causal edge + exposure border
+\definecolor{linered}{HTML}{A85D52}    % confounder edge + msas border
+\definecolor{lineamber}{HTML}{C77B30}  % mediator border + latent edge
+
+% ---- node + edge styles ----
+% Node roles:  exposure | outcome | msas | mediator | obs | latent
+%   msas     = minimal sufficient adjustment set (measured confounders to
+%              condition on for the exposure->outcome effect; dagitty term).
+%   mediator = on a directed exposure->outcome path; do NOT adjust.
+%   obs      = measured, present in the graph, neither confounder nor mediator.
+%   latent   = unmeasured / unobserved.
+% Edge classes: causal | conf | latentedge | other
+%   causal     = lies on a directed exposure->outcome path (the effect estimated).
+%   conf       = sourced from an msas node (opens a back-door path).
+%   latentedge = optional highlight for an edge out of a latent confounder.
+%   other      = remaining structural edges.
+\tikzset{
+  font=\sffamily\footnotesize,
+  exposure/.style={rectangle, rounded corners=4pt, draw=linegreen, line width=1.3pt,
+                   fill=stageLang, text=dark, align=center,
+                   minimum width=1.7cm, minimum height=0.95cm},
+  outcome/.style={rectangle, rounded corners=4pt, draw=slate!75, line width=0.7pt,
+                  fill=stageSetup, text=dark, align=center,
+                  minimum width=1.6cm, minimum height=0.95cm},
+  msas/.style={rectangle, rounded corners=4pt, draw=linered, line width=0.9pt,
+               fill=stageAuth, text=dark, align=center,
+               minimum width=1.6cm, minimum height=0.9cm},
+  mediator/.style={rectangle, rounded corners=4pt, draw=lineamber, line width=0.9pt,
+                   fill=stageMed, text=dark, align=center,
+                   minimum width=1.6cm, minimum height=0.9cm},
+  obs/.style={rectangle, rounded corners=4pt, draw=slate!75, line width=0.7pt,
+              fill=white, text=dark, align=center,
+              minimum width=1.6cm, minimum height=0.9cm},
+  latent/.style={rectangle, rounded corners=4pt, draw=slate!85, line width=0.7pt, dashed,
+                 fill=stageOut, text=dark, align=center,
+                 minimum width=1.7cm, minimum height=0.9cm},
+  causal/.style={-{Latex[length=2.5mm]}, draw=linegreen, line width=1.4pt},
+  conf/.style={-{Latex[length=2.5mm]}, draw=linered, line width=1.0pt},
+  latentedge/.style={-{Latex[length=2.5mm]}, draw=lineamber, line width=1.0pt, dashed},
+  other/.style={-{Latex[length=2.5mm]}, draw=slate, line width=0.55pt, opacity=0.8},
+  ptitle/.style={font=\sffamily\bfseries\normalsize, text=dark, align=center},
+  anno/.style={font=\sffamily\itshape\small, text=slate, align=center},
+  legend/.style={font=\sffamily\scriptsize, text=dark, align=center},
+  % optional "Adjust for: {...}" callout box
+  setbox/.style={rectangle, rounded corners=4pt, draw=linered, line width=0.9pt,
+                 fill=stageAuth, text=dark, align=center, minimum height=0.95cm,
+                 inner sep=5pt},
+}
+
+% ---- legend helpers (emit only the entries that apply to THIS dag) ----
+% Prefer the entry wrappers: \lentry{<role>}{<caption>}   \eentry{<color>}{<caption>}
+%                            \eentrydash{<color>}{<caption>}   (latent)
+% Bare swatches \lnode / \ledge / \ledgedash are available if a caption needs
+% custom markup, but then wrap the pair in \mbox yourself (see below).
+% Keep swatches small — the legend should read as a compact footer, not a banner.
+%
+% Swatch-vs-text vertical centring, one knob PER SWATCH TYPE. They deliberately do
+% not share a value: the three macros build different objects (a tikz node, a tikz
+% path, a plain rule) and do not land alike for a given offset under the global
+% font=\sffamily\footnotesize set above, which the nested \tikz swatches inherit.
+%
+% Check alignment in the completed figure, because inherited font settings and
+% the caption's ascenders and descenders affect the apparent vertical centre.
+\newcommand{\swnode}{-0.5ex}                       % \lnode      (tikz node)
+\newcommand{\swdash}{-0.65ex}                      % \ledgedash  (tikz path)
+\newcommand{\swrule}{\dimexpr0.5ex-0.55pt\relax}   % \ledge      (rule lift, from its bottom)
+\newcommand{\lnode}[1]{\tikz[baseline=\swnode]\node[#1, minimum width=0.38cm, minimum height=0.24cm, inner sep=1.5pt]{};}
+\newcommand{\ledge}[1]{{\color{#1}\rule[\swrule]{0.5cm}{1.1pt}}}
+\newcommand{\ledgedash}[1]{\tikz[baseline=\swdash]\draw[#1, line width=1.1pt, dashed](0,0)--(0.5cm,0);}
+% Entry wrappers: \mbox keeps a swatch glued to its caption so a legend line can
+% only break BETWEEN entries, never inside one. Without this, a legend node with
+% `text width` hyphenates mid-phrase ("confound-/ing path").
+\newcommand{\lentry}[2]{\mbox{\lnode{#1}\ #2}}
+\newcommand{\eentry}[2]{\mbox{\ledge{#1}\ #2}}
+\newcommand{\eentrydash}[2]{\mbox{\ledgedash{#1}\ #2}}
+
+\begin{document}
+\begin{tikzpicture}
+
+% <<NODES>>  — one line per node:  \node[<role>] (<id>) at (<x>, <y>) {<Label>};
+%             (wrap long labels with \\ ; keep boxes ~1-3 lines)
+
+% <<EDGES>>  — grouped other / conf / latentedge, then causal LAST (on top):
+%             \draw[<class>] (<from>) <to-spec> (<to>);
+
+% <<LEGEND>> — adaptive footer in the small \legend style; one node for the
+%   roles present, one for the edge classes present, e.g.:
+%   \node[legend] at (<x>, <y_nodes>) {%
+%     \textbf{Nodes:}\ \, \lnode{exposure}\ exposure \quad
+%     \lnode{msas}\ in adjustment set \quad \lnode{mediator}\ mediator (do not adjust) \quad
+%     \lnode{latent}\ latent \quad \lnode{outcome}\ outcome \quad \lnode{obs}\ present, not adjusted};
+%   \node[legend] at (<x>, <y_edges>) {%
+%     \textbf{Edges:}\ \, \ledge{linegreen}\ causal path estimated \quad
+%     \ledge{linered}\ confounding path \quad \ledgedash{lineamber}\ latent confounding \quad
+%     \ledge{slate}\ other structural};
+
+% <<CAPTION>> — the adjustment set listed in red, NOT prose, e.g.:
+%   \node[anno, text=linered] at (<x>, <y>) {MSAS = \{\,<v1>, <v2>, \dots\,\}};
+%   (wrap with \\ if long). Omit only if there is no adjustment set.
+
+\end{tikzpicture}
+\end{document}

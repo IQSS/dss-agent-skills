@@ -1,0 +1,30 @@
+.DS_Store
+__pycache__/
+*.pyc
+
+# Working notes kept on the maintainer's machine, never committed
+AGENTS.md
+CLAUDE.md
+STATUS.md
+TASKS.md
+SPECIFICATION.md
+METHODOLOGY.md
+MEMORY.md
+
+# Project-level agent settings and skill links used while developing
+.claude/
+.codex/
+.agents/
+/.venv/
+/logs/
+/site/
+/_site
+/.quarto
+/skills/
+/downloads/
+/_catalogue.qmd
+/.env
+/.env.*
+
+/.quarto/
+**/*.quarto_ipynb

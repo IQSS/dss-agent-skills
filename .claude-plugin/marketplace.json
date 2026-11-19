@@ -1,0 +1,16 @@
+{
+  "name": "dss-agent-skills",
+  "metadata": {
+    "description": "Reusable skills for research workflows, maintained by IQSS Data Science Services."
+  },
+  "owner": {
+    "name": "IQSS Data Science Services"
+  },
+  "plugins": [
+    {
+      "name": "dss-agent-skills",
+      "source": "./",
+      "description": "Reusable research skills maintained by IQSS Data Science Services."
+    }
+  ]
+}

@@ -1,0 +1,392 @@
+---
+title: "`r params$title`"
+subtitle: "Automated first-look EDA"
+date: today
+format:
+  pdf:
+    pdf-engine: xelatex
+    toc: true
+    number-sections: true
+    colorlinks: true
+    geometry: margin=1in
+    fontsize: 11pt
+    fig-width: 7
+    fig-height: 5
+    include-in-header:
+      text: |
+        % TeX Live 2026+ compat: pandoc wraps caption-less tables with
+        % \def\LTcaptype{none}; newer longtable/caption require 'none' to be
+        % a real counter.
+        \makeatletter
+        \@ifundefined{c@none}{\newcounter{none}}{}
+        \makeatother
+params:
+  data_path: "data/processed/data.csv"
+  outcome: null
+  exposures: null
+  grouping: null
+  title: "Exploratory Data Analysis"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo    = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width  = 7,
+  fig.height = 5
+)
+
+# Load from the selected project environment. Report missing packages without
+# installing into a user's library during a render.
+load_pkgs <- function(pkgs) {
+  missing <- pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]
+  if (length(missing)) {
+    stop(
+      "Missing packages: ", paste(missing, collapse = ", "), "\n",
+      "Add these packages using the project's package-management method,\n",
+      "record their versions, and rerun this report.",
+      call. = FALSE
+    )
+  }
+  invisible(lapply(pkgs, library, character.only = TRUE, quietly = TRUE))
+}
+load_pkgs(c(
+  "tidyverse", "tidytext", "janitor", "skimr", "naniar", "visdat", "corrplot",
+  "GGally", "scales", "knitr", "kableExtra", "mgcv", "readxl", "arrow", "tools", "fs"
+))
+
+# ---- Helpers ----
+
+read_data <- function(path) {
+  ext <- tolower(tools::file_ext(path))
+  switch(
+    ext,
+    csv     = readr::read_csv(path, show_col_types = FALSE),
+    tsv     = readr::read_tsv(path, show_col_types = FALSE),
+    txt     = readr::read_delim(path, show_col_types = FALSE),
+    xlsx    = readxl::read_excel(path, sheet = 1, .name_repair = "minimal"),
+    xls     = readxl::read_excel(path, sheet = 1, .name_repair = "minimal"),
+    parquet = arrow::read_parquet(path),
+    stop("Unsupported file extension: ", ext)
+  )
+}
+
+parse_param <- function(x) {
+  if (is.null(x) || identical(x, "null") || identical(x, "")) return(NULL)
+  if (length(x) == 1L && grepl(",", x)) {
+    strsplit(x, ",\\s*")[[1]] |> trimws()
+  } else {
+    as.character(x)
+  }
+}
+
+OUTCOME   <- parse_param(params$outcome)
+EXPOSURES <- parse_param(params$exposures)
+GROUPING  <- parse_param(params$grouping)
+
+theme_set(
+  theme_bw(base_size = 10) +
+    theme(
+      panel.grid.minor = element_blank(),
+      strip.background = element_rect(fill = "grey95", color = NA)
+    )
+)
+```
+
+```{r load-data}
+dat <- read_data(params$data_path) |> clean_names()
+
+n_rows      <- nrow(dat)
+n_cols      <- ncol(dat)
+n_numeric   <- sum(sapply(dat, is.numeric))
+n_character <- sum(sapply(dat, is.character))
+n_factor    <- sum(sapply(dat, is.factor))
+n_logical   <- sum(sapply(dat, is.logical))
+n_date      <- sum(sapply(dat, function(x) inherits(x, c("Date", "POSIXct", "POSIXlt"))))
+
+dat_numeric <- dat |> select(where(is.numeric))
+dat_cat     <- dat |> select(where(~ is.character(.) | is.factor(.)))
+```
+
+# Dataset overview
+
+**Source file:** ``r basename(params$data_path)``
+
+| Property | Value |
+|---|---|
+| Rows | `r scales::comma(n_rows)` |
+| Columns | `r n_cols` |
+| Numeric | `r n_numeric` |
+| Character / factor | `r n_character + n_factor` |
+| Logical | `r n_logical` |
+| Date / time | `r n_date` |
+
+## Variable types
+
+```{r fig.height=3.5}
+vis_dat(dat) + theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 7))
+```
+
+# Per-column profile
+
+```{r}
+summarize_var <- function(x, n_total) {
+  is_num <- is.numeric(x)
+  is_cat <- is.character(x) || is.factor(x)
+
+  if (is_cat) {
+    tbl <- sort(table(x, useNA = "no"), decreasing = TRUE)
+    is_high_card <- length(tbl) / n_total > 0.5
+    if (is_high_card) {
+      top1 <- "(high-card)"
+      top2 <- top3 <- ""
+    } else {
+      lvl  <- substr(names(tbl), 1, 10)
+      top  <- paste0(lvl, " (", tbl, ")")
+      top1 <- if (length(top) >= 1) top[1] else ""
+      top2 <- if (length(top) >= 2) top[2] else ""
+      top3 <- if (length(top) >= 3) top[3] else ""
+    }
+  } else {
+    top1 <- top2 <- top3 <- ""
+  }
+
+  tibble(
+    type       = if (is_num) "num" else if (is_cat) "cat" else class(x)[1],
+    n_missing  = as.character(sum(is.na(x))),
+    n_distinct = as.character(dplyr::n_distinct(x, na.rm = TRUE)),
+    min        = if (is_num) format(min(x,    na.rm = TRUE), digits = 3) else "",
+    p25        = if (is_num) format(quantile(x, .25, na.rm = TRUE), digits = 3) else "",
+    median     = if (is_num) format(median(x, na.rm = TRUE), digits = 3) else "",
+    mean       = if (is_num) format(mean(x,   na.rm = TRUE), digits = 3) else "",
+    p75        = if (is_num) format(quantile(x, .75, na.rm = TRUE), digits = 3) else "",
+    max        = if (is_num) format(max(x,    na.rm = TRUE), digits = 3) else "",
+    sd         = if (is_num) format(sd(x,     na.rm = TRUE), digits = 3) else "",
+    top1       = top1,
+    top2       = top2,
+    top3       = top3
+  )
+}
+
+profile <- imap(dat, \(x, name) {
+  summarize_var(x, n_total = nrow(dat)) |> mutate(variable = name, .before = 1)
+}) |> bind_rows()
+
+profile |>
+  kable(booktabs = TRUE) |>
+  kable_styling(font_size = 7, latex_options = c("HOLD_position", "striped")) |>
+  column_spec(1, bold = TRUE) |>
+  landscape()
+```
+
+# Data-quality flags
+
+```{r}
+flag_constant <- function(df) {
+  vapply(df, function(x) length(unique(na.omit(x))) <= 1L, logical(1)) |>
+    which() |>
+    names()
+}
+
+flag_high_cardinality <- function(df, frac = 0.5) {
+  cat_cols <- df |> select(where(~ is.character(.) | is.factor(.))) |> colnames()
+  hi <- vapply(cat_cols, function(col) {
+    length(unique(df[[col]])) / nrow(df) > frac
+  }, logical(1))
+  cat_cols[hi]
+}
+
+constants    <- flag_constant(dat)
+hi_card_cats <- flag_high_cardinality(dat)
+
+fmt_cols <- function(x) if (length(x)) paste0("`", x, "`", collapse = ", ") else "none"
+constants_str <- fmt_cols(constants)
+hi_card_str   <- fmt_cols(hi_card_cats)
+```
+
+- **Constant columns** (single unique value, including all-NA): `r constants_str`.
+- **Very high-cardinality categoricals** (>50% of rows have a unique value — likely IDs or free text): `r hi_card_str`.
+
+# Missing data
+
+## By variable
+
+```{r fig.height=4}
+gg_miss_var(dat, show_pct = TRUE) +
+  theme_bw(base_size = 9) +
+  labs(y = "Number missing")
+```
+
+## Heatmap
+
+```{r fig.height=5}
+vis_miss(dat, sort_miss = TRUE) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 7))
+```
+
+## Co-occurring missingness patterns
+
+```{r fig.height=4}
+if (any(is.na(dat)) && sum(colSums(is.na(dat)) > 0) > 1) {
+  gg_miss_upset(dat, nsets = min(10, sum(colSums(is.na(dat)) > 0)))
+} else {
+  cat("No multi-column missingness pattern to display.")
+}
+```
+
+# Univariate distributions
+
+## Numeric
+
+```{r fig.height=8}
+if (ncol(dat_numeric) > 0) {
+  dat_numeric |>
+    pivot_longer(everything(), names_to = "variable", values_to = "value") |>
+    ggplot(aes(x = value)) +
+    geom_histogram(bins = 30, fill = "steelblue", color = "white", alpha = 0.7) +
+    facet_wrap(~variable, scales = "free", ncol = 3) +
+    theme_bw(base_size = 8) +
+    labs(x = NULL, y = "Count")
+}
+```
+
+## Categorical (top-20 levels per variable)
+
+```{r fig.height=6}
+# Drop high-cardinality categoricals (likely IDs): the resulting plot would
+# show 20 bars of count = 1 each and be unreadable. They're already flagged
+# in §3 Data-quality flags.
+dat_cat_plot <- dat_cat |>
+  select(where(\(x) dplyr::n_distinct(x, na.rm = TRUE) / length(x) <= 0.5))
+
+if (ncol(dat_cat_plot) > 0) {
+  dat_cat_plot |>
+    pivot_longer(everything(), names_to = "variable", values_to = "value") |>
+    group_by(variable, value) |>
+    summarise(n = n(), .groups = "drop") |>
+    group_by(variable) |>
+    slice_max(n, n = 20) |>
+    ungroup() |>
+    ggplot(aes(y = reorder_within(value, n, variable), x = n)) +
+    geom_col(fill = "steelblue", alpha = 0.7) +
+    facet_wrap(~variable, scales = "free", ncol = 2) +
+    scale_y_reordered() +
+    theme_bw(base_size = 8) +
+    labs(x = "Count", y = NULL)
+}
+```
+
+# Pairwise structure
+
+## Spearman correlation matrix
+
+```{r fig.height=6}
+if (ncol(dat_numeric) > 1) {
+  cor_matrix <- cor(dat_numeric, use = "pairwise.complete.obs", method = "spearman")
+  corrplot(
+    cor_matrix,
+    method = "color", type = "upper",
+    tl.cex = 0.7, tl.col = "black",
+    addCoef.col = "black", number.cex = 0.5,
+    diag = FALSE
+  )
+}
+```
+
+## Boxplots (outlier scan)
+
+```{r fig.height=8}
+if (ncol(dat_numeric) > 0) {
+  dat_numeric |>
+    pivot_longer(everything(), names_to = "variable", values_to = "value") |>
+    ggplot(aes(x = variable, y = value)) +
+    geom_boxplot(fill = "steelblue", alpha = 0.3,
+                 outlier.color = "red", outlier.size = 1) +
+    facet_wrap(~variable, scales = "free", ncol = 3) +
+    theme_bw(base_size = 8) +
+    theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
+    labs(x = NULL, y = NULL)
+}
+```
+
+## Pairwise scatterplots (first 6 numeric)
+
+```{r fig.height=8}
+if (ncol(dat_numeric) > 1) {
+  n_show <- min(6, ncol(dat_numeric))
+  ggpairs(
+    dat_numeric[, 1:n_show],
+    upper = list(continuous = wrap("cor", size = 3)),
+    lower = list(continuous = wrap("points", alpha = 0.3, size = 0.5)),
+    diag  = list(continuous = wrap("densityDiag", alpha = 0.5)),
+    progress = FALSE
+  ) +
+    theme_bw(base_size = 7)
+}
+```
+
+```{r outcome-section-eval, include=FALSE}
+has_outcome   <- !is.null(OUTCOME) && all(OUTCOME %in% names(dat))
+has_exposures <- !is.null(EXPOSURES) && all(EXPOSURES %in% names(dat))
+has_grouping  <- !is.null(GROUPING) && all(GROUPING %in% names(dat))
+```
+
+`r if (has_outcome) "# Outcome focus" else ""`
+
+```{r fig.height=4, eval=has_outcome}
+y <- OUTCOME[1]
+
+# Distribution
+ggplot(dat, aes(x = .data[[y]])) +
+  geom_histogram(bins = 40, fill = "steelblue", color = "white", alpha = 0.7) +
+  labs(title = paste("Distribution of", y), x = y, y = "Count")
+```
+
+```{r fig.height=5, eval=(has_outcome && has_grouping)}
+g <- GROUPING[1]
+
+# Outcome by group
+ggplot(dat, aes(x = .data[[g]], y = .data[[y]], fill = .data[[g]])) +
+  geom_boxplot(alpha = 0.6, outlier.size = 0.7) +
+  theme(legend.position = "none") +
+  labs(title = paste(y, "by", g), x = g, y = y)
+```
+
+`r if (has_exposures && has_outcome) "# Exposure → outcome scatters" else ""`
+
+```{r fig.height=5, eval=(has_exposures && has_outcome)}
+walk(EXPOSURES, function(ex) {
+  p <- ggplot(dat, aes(x = .data[[ex]], y = .data[[y]])) +
+    geom_point(alpha = 0.4, size = 0.8) +
+    geom_smooth(method = "gam", formula = y ~ s(x, k = 6), color = "steelblue", fill = "steelblue", alpha = 0.2) +
+    labs(title = paste(y, "vs", ex), x = ex, y = y)
+  print(p)
+})
+```
+
+`r if (has_grouping) "# Group structure" else ""`
+
+```{r eval=has_grouping, results='asis'}
+for (g in GROUPING) {
+  tab <- dat |>
+    count(.data[[g]], sort = TRUE) |>
+    head(30)
+  g_disp <- gsub("_", "\\\\_", g)   # escape underscores for LaTeX caption
+  print(kable(tab, booktabs = TRUE,
+              caption = paste("Counts by", g_disp, "(top 30 levels)")) |>
+        kable_styling(font_size = 8,
+                      latex_options = "HOLD_position"))
+  cat("\n\n")
+}
+```
+
+# Notes
+
+This report was generated by the `/eda` skill. The always-on baseline runs for any dataset; outcome / exposure / grouping sections appear when you pass those as params. Rerun with focused params to tailor:
+
+```
+/eda <path> outcome=<col> exposures=<col,col> grouping=<col>
+```
+
+If a section is empty or missing here, it's because the dataset didn't contain enough of that variable type (e.g., no categorical columns means no bar charts).

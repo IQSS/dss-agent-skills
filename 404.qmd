@@ -1,0 +1,6 @@
+---
+title: "Page not found"
+toc: false
+---
+
+This address does not match a page in the collection. [Browse the skills](https://iqss.github.io/dss-agent-skills/) or [report a broken link](https://github.com/IQSS/dss-agent-skills/issues).
