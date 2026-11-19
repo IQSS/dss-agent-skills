@@ -16,7 +16,6 @@ jobs:
   check:
     runs-on: ubuntu-latest
     env:
-      UV_PROJECT_ENVIRONMENT: ${{ runner.temp }}/dss-agent-skills-venv
       PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@v6
@@ -24,7 +23,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install pinned check runner
-        run: python -m pip install uv==0.13.9
+        run: |
+          python -m pip install uv==0.13.9
+          echo "UV_PROJECT_ENVIRONMENT=$RUNNER_TEMP/dss-agent-skills-venv" >> "$GITHUB_ENV"
       - name: Check repository
         run: python scripts/check-self-contained.py . --plugin .claude-plugin/plugin.json --check-metadata --check-public-source
       - name: Validate skill format
