@@ -2,7 +2,7 @@
 
 Reusable skills for researchers working with AI coding agents. Each skill supplies instructions and, where useful, a helper script or template. The agent applies them to your project; you supply the research decisions and permitted access.
 
-Browse the [skill catalogue](https://iqss.github.io/dss-agent-skills/) for examples, requirements, and individual downloads.
+Browse the [skill library](https://iqss.github.io/dss-agent-skills/) by task, preview each procedure, and download individual skills or the full collection. Each skill page provides examples and requirements.
 
 ## Skills
 

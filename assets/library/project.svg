@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="symbol-project" viewBox="0 0 200 180" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">Project</title>
+  <desc id="desc">An open project folder with a manuscript, data table, and plot.</desc>
+  <g stroke="#465557" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M20 64h52l12 13h91v79H20Z" fill="#829080" />
+    <path d="M31 84V29h48l13 13v79H31Z" fill="#f7f3e9" />
+    <path d="M79 29v14h13M42 49h25M42 58h37M42 67h33" />
+    <rect x="71" y="42" width="60" height="88" rx="3" fill="#f7f3e9" />
+    <path d="M80 55h42v10H80Z" fill="#b9c2c2" stroke="none" />
+    <path d="M80 55h42v51H80ZM80 65h42M80 78h42M80 92h42M94 55v51M108 55v51" stroke="#84968c" stroke-width="1.8" />
+    <rect x="115" y="25" width="64" height="98" rx="3" fill="#f7f3e9" />
+    <path d="M126 43h32" stroke="#94a2a7" />
+    <path d="M126 56v44h41" />
+    <path d="m130 89 11-13 10 4 13-20" stroke="#6788a6" stroke-width="3.5" />
+    <circle cx="130" cy="89" r="2.5" fill="#6788a6" stroke="none" />
+    <circle cx="141" cy="76" r="2.5" fill="#6788a6" stroke="none" />
+    <circle cx="151" cy="80" r="2.5" fill="#6788a6" stroke="none" />
+    <circle cx="164" cy="60" r="2.5" fill="#6788a6" stroke="none" />
+    <path d="M12 93h65l12 11h99l-14 53a7 7 0 0 1-7 5H34a7 7 0 0 1-7-5Z" fill="#b3bd9d" />
+    <path d="M28 113h143" stroke="#d2d8bf" />
+    <rect x="78" y="126" width="48" height="18" rx="3" fill="#e4d390" />
+    <path d="M90 135h24" stroke="#978043" />
+  </g>
+</svg>

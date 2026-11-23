@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="symbol-writing" viewBox="0 0 200 180" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">Write and revise</title>
+  <desc id="desc">A manuscript with a figure, struck-out text, an insertion, and a pencil.</desc>
+  <g stroke="#465557" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M31 17h99l20 20v126H31Z" fill="#f7f3e9" />
+    <path d="M130 17v21h20M47 35h58M47 47h42" />
+    <path d="M50 62v38h77" stroke="#84968c" stroke-width="1.8" />
+    <path d="m56 91 18-12 15 5 18-19 15 6" stroke="#6788a6" stroke-width="3" />
+    <g fill="#6788a6" stroke="none">
+      <circle cx="56" cy="91" r="2.6" />
+      <circle cx="74" cy="79" r="2.6" />
+      <circle cx="89" cy="84" r="2.6" />
+      <circle cx="107" cy="65" r="2.6" />
+      <circle cx="122" cy="71" r="2.6" />
+    </g>
+    <path d="M47 116h39M98 116h29M47 130h76M47 145h27M97 145h24" stroke="#84968c" />
+    <path d="m46 113 42 6M78 146l6-7 6 7M92 137h26" stroke="#a35f49" stroke-width="2.5" />
+    <path d="m137 138 31-99 12 4-31 99-11 10Z" fill="#c9ab55" />
+    <path d="m165 49 12 4M137 138l12 4M138 152l-1-14" />
+  </g>
+</svg>

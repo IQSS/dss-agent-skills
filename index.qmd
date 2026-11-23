@@ -1,20 +1,69 @@
 ---
 title: "DSS agent skills"
-subtitle: "Reusable tasks for research with AI agents"
+page-layout: custom
+sidebar: false
 toc: false
+resources:
+  - library.css
+  - library.js
+  - "assets/library/*.svg"
 ---
 
-A skill gives an agent instructions for a recurring task, together with any scripts or templates it needs. Choose one for the work at hand: setting up a project, finding literature, reviewing an analysis, or running a reproducible workflow.
+```{=html}
+<link rel="stylesheet" href="library.css">
+<script src="library.js" defer></script>
+<div class="library-page">
 
-::: {.catalogue-intro}
-[Install in Claude Code](installation.qmd){.btn .btn-primary}
-[Download all nine skills](downloads/dss-agent-skills.zip){.btn .btn-outline-primary}
+    <section class="intro" aria-labelledby="page-title">
+      <div><p class="eyebrow">Data Science Services · Research with AI agents</p><h1 id="page-title">A library of agent skills</h1></div>
+      <p>A skill is a reusable procedure for an agent: instructions, together with any scripts or templates it needs. Choose one, give the agent your project details, and use it again when the task comes around.</p>
+    </section>
+    <section id="library" aria-label="Browse skills">
+      <div class="library-tools" hidden>
+        <label class="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="m15 15 6 6"/></svg><span class="sr-only">Search skills</span><input id="search" type="search" placeholder="Find a skill or a task…" autocomplete="off" aria-controls="shelves"></label>
+        <div id="filters" class="filters" role="group" aria-label="Filter by task"></div>
+        <span id="result-count" role="status" aria-live="polite">9 skills</span>
+        <a class="download-all" href="downloads/dss-agent-skills.zip">Download all skills <span>(ZIP)</span></a>
+      </div>
+      <div class="library-scene" hidden>
+        <section class="cabinet" aria-label="Skill shelves">
+          <svg class="cabinet-depth" aria-hidden="true"><path class="cabinet-top-face"/><path class="cabinet-side-face"/><path class="cabinet-base-side"/></svg>
+          <div class="cabinet-cap"><i aria-hidden="true"></i><span>THE SKILL LIBRARY</span><i aria-hidden="true"></i></div>
+          <div id="shelves" class="shelves"></div>
+          <div id="empty-state" class="empty-state" hidden><h2>No matching skills</h2><p>Try another task or look through the whole library.</p><button type="button" id="reset-filters">Show all skills</button></div>
+          <nav id="shelf-pages" class="shelf-pages" aria-label="More skills" hidden><button id="previous-page" type="button">Previous</button><span id="page-number"></span><button id="next-page" type="button">Next</button></nav>
+          <div class="cabinet-base" aria-hidden="true"><span></span><span></span></div>
+          <div class="cabinet-feet" aria-hidden="true"></div>
+        </section>
+        <section class="reading-station" aria-label="Selected skill">
+          <div class="librarian">
+            <div class="welcome"><h2>Pick a book. Explore a procedure.</h2><p>Hover to browse. Click a book to pin it open; click it again to unpin. Each procedure can be reused across projects.</p><span class="welcome-tail" aria-hidden="true"></span></div>
+            <img class="agent" src="assets/library/agent.svg" alt="Our robot librarian in a rose coat, holding two interlocking gears" width="170" height="220">
+          </div>
+          <article id="open-book" class="open-book" aria-labelledby="skill-title">
+            <div class="book-pages">
+              <div class="left-page">
+                <p id="skill-group" class="page-kicker"></p>
+                <h2 id="skill-title"></h2>
+                <div id="skill-illustration" class="skill-illustration" aria-hidden="true"></div>
+                <p id="skill-summary" class="skill-summary"></p>
+                <div class="book-actions"><a id="open-skill" class="primary-link" href="skills/scaffold.html">Open this skill</a><a id="download-skill" class="download-link" href="downloads/scaffold.zip">Download</a></div>
+              </div>
+              <div class="right-page"><button id="pin-book" class="pin-control" type="button" aria-label="Pin this book" aria-pressed="false" title="Pin this book"><svg viewBox="0 0 24 44" aria-hidden="true"><path d="M3 1H21V40L12 33L3 40Z"/></svg></button><p class="page-kicker">The agent’s procedure</p><ol id="skill-steps"></ol><p class="procedure-note">Adapted to your project, using the instructions in <code>SKILL.md</code>.</p></div>
+            </div>
+            <div class="example"><div class="example-heading"><span>Try it with your agent</span><button id="copy-prompt" type="button">Copy prompt</button></div><code id="skill-command"></code><p id="skill-example"></p></div>
+          </article>
+          <div class="reading-desk" aria-hidden="true"><span>INSTRUCTIONS · SCRIPTS · TEMPLATES</span></div>
+          <p id="selection-status" class="selection-status" role="status" aria-live="polite"></p>
+        </section>
+      </div>
+    </section>
+    <section class="use-skills" aria-label="Using the collection"><p><strong>Use the same skill in your next project.</strong> Install the collection once, then tell the agent which skill to use and what you want it to do.</p><a href="installation.html">Installation and examples</a></section>
 
-Each skill page explains its purpose, requirements, and an example prompt. You direct the research; the agent carries out the task using the access you provide.
-:::
+```
 
-{{< include _catalogue.qmd >}}
+{{< include _library.qmd >}}
 
-## Learn the workflow
-
-[Doing Research with AI Agents](https://iqss.github.io/dss-agentic-research/) explains how to organize, check, and document research with an agent. [Extending Your Agent’s Toolkit](https://iqss.github.io/dss-agentic-toolkit/) covers the tools behind those workflows.
+```{=html}
+</div>
+```

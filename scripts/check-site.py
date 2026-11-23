@@ -66,6 +66,25 @@ def main():
                 problems.append(f"{path.name}: missing anchor {link}")
     catalogue = json.loads((ROOT / "catalogue.json").read_text())
     expected = {item["name"] for item in catalogue}
+    homepage = SITE / "index.html"
+    if homepage.is_file():
+        content = homepage.read_text(encoding="utf-8")
+        embedded = re.search(r'<script id="library-data" type="application/json">(.*?)</script>', content, re.S)
+        if not embedded:
+            problems.append("Missing library catalogue data")
+        else:
+            entries = json.loads(embedded[1])
+            if {item["name"] for item in entries} != expected or len(entries) != len(expected):
+                problems.append("Library and skill inventories differ")
+            for item in entries:
+                if not (SITE / "assets/library" / item["icon"]).is_file():
+                    problems.append(f"Missing library illustration: {item['icon']}")
+                if not any(urlsplit(link).path.endswith(f"skills/{item['name']}.html")
+                           for link in pages[homepage.resolve()].links):
+                    problems.append(f"Missing ordinary homepage link: {item['name']}")
+        for filename in ("library.css", "library.js", "assets/library/agent.svg"):
+            if not (SITE / filename).is_file():
+                problems.append(f"Missing library resource: {filename}")
     for name in expected | {"dss-agent-skills"}:
         archive_path = SITE / "downloads" / (name + ".zip")
         if not archive_path.is_file():
