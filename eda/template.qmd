@@ -53,7 +53,7 @@ load_pkgs <- function(pkgs) {
 }
 load_pkgs(c(
   "tidyverse", "tidytext", "janitor", "skimr", "naniar", "visdat", "corrplot",
-  "GGally", "scales", "knitr", "kableExtra", "mgcv", "readxl", "arrow", "tools", "fs"
+  "GGally", "scales", "knitr", "kableExtra", "mgcv", "readxl", "arrow", "tools", "fs", "withr"
 ))
 
 # ---- Helpers ----
@@ -107,6 +107,23 @@ n_date      <- sum(sapply(dat, function(x) inherits(x, c("Date", "POSIXct", "POS
 
 dat_numeric <- dat |> select(where(is.numeric))
 dat_cat     <- dat |> select(where(~ is.character(.) | is.factor(.)))
+
+# Keep all columns and use the same rows, in input order, for both heatmaps.
+heatmap_data <- dat
+heatmap_row_limit <- 800000L %/% max(1L, n_cols)
+heatmap_sampled <- n_rows > heatmap_row_limit
+if (heatmap_sampled) {
+  rows <- withr::with_seed(2026L, sample.int(n_rows, heatmap_row_limit))
+  heatmap_data <- dat[sort(rows), , drop = FALSE]
+}
+heatmap_note <- if (heatmap_row_limit == 0L) {
+  "One row exceeds the plotting limit. The report omits both row-level heatmaps."
+} else if (heatmap_sampled) {
+  sprintf("Both heatmaps show the same random sample of %s of %s rows, in their original order.",
+          scales::comma(nrow(heatmap_data)), scales::comma(n_rows))
+} else {
+  sprintf("This heatmap shows all %s rows.", scales::comma(n_rows))
+}
 ```
 
 # Dataset overview
@@ -124,8 +141,10 @@ dat_cat     <- dat |> select(where(~ is.character(.) | is.factor(.)))
 
 ## Variable types
 
-```{r fig.height=3.5}
-vis_dat(dat) + theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 7))
+`r heatmap_note`
+
+```{r fig.height=3.5, eval=nrow(heatmap_data) > 0}
+vis_dat(heatmap_data) + theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 7))
 ```
 
 # Per-column profile
@@ -215,13 +234,16 @@ hi_card_str   <- fmt_cols(hi_card_cats)
 ```{r fig.height=4}
 gg_miss_var(dat, show_pct = TRUE) +
   theme_bw(base_size = 9) +
-  labs(y = "Number missing")
+  labs(y = "Missing observations (%)")
 ```
 
 ## Heatmap
 
-```{r fig.height=5}
-vis_miss(dat, sort_miss = TRUE) +
+`r heatmap_note`
+
+```{r fig.height=5, eval=nrow(heatmap_data) > 0}
+vis_miss(heatmap_data, sort_miss = TRUE,
+         show_perc = !heatmap_sampled, show_perc_col = !heatmap_sampled) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 7))
 ```
 
@@ -330,38 +352,49 @@ if (ncol(dat_numeric) > 1) {
 has_outcome   <- !is.null(OUTCOME) && all(OUTCOME %in% names(dat))
 has_exposures <- !is.null(EXPOSURES) && all(EXPOSURES %in% names(dat))
 has_grouping  <- !is.null(GROUPING) && all(GROUPING %in% names(dat))
+y <- OUTCOME[1]
+
+is_category <- function(x) {
+  is.character(x) || is.factor(x) || is.logical(x) ||
+    (is.numeric(x) && any(!is.na(x)) && all(x[!is.na(x)] %in% c(0, 1)))
+}
+categorical_outcome <- has_outcome && is_category(dat[[y]])
 ```
 
 `r if (has_outcome) "# Outcome focus" else ""`
 
 ```{r fig.height=4, eval=has_outcome}
-y <- OUTCOME[1]
-
-# Distribution
-ggplot(dat, aes(x = .data[[y]])) +
-  geom_histogram(bins = 40, fill = "steelblue", color = "white", alpha = 0.7) +
-  labs(title = paste("Distribution of", y), x = y, y = "Count")
+if (categorical_outcome) {
+  ggplot(dat, aes(x = factor(.data[[y]]))) +
+    geom_bar(fill = "steelblue") + coord_flip() +
+    labs(title = paste("Distribution of", y), x = y, y = "Count")
+} else {
+  ggplot(dat, aes(x = .data[[y]])) +
+    geom_histogram(bins = 40, fill = "steelblue", color = "white", alpha = 0.7) +
+    labs(title = paste("Distribution of", y), x = y, y = "Count")
+}
 ```
 
-```{r fig.height=5, eval=(has_outcome && has_grouping)}
+```{r fig.height=5, eval=(has_outcome && has_grouping && !categorical_outcome)}
 g <- GROUPING[1]
-
-# Outcome by group
 ggplot(dat, aes(x = .data[[g]], y = .data[[y]], fill = .data[[g]])) +
   geom_boxplot(alpha = 0.6, outlier.size = 0.7) +
   theme(legend.position = "none") +
   labs(title = paste(y, "by", g), x = g, y = y)
 ```
 
-`r if (has_exposures && has_outcome) "# Exposure → outcome scatters" else ""`
+`r if (has_exposures && has_outcome) "# Exposure and outcome" else ""`
 
 ```{r fig.height=5, eval=(has_exposures && has_outcome)}
 walk(EXPOSURES, function(ex) {
-  p <- ggplot(dat, aes(x = .data[[ex]], y = .data[[y]])) +
-    geom_point(alpha = 0.4, size = 0.8) +
-    geom_smooth(method = "gam", formula = y ~ s(x, k = 6), color = "steelblue", fill = "steelblue", alpha = 0.2) +
-    labs(title = paste(y, "vs", ex), x = ex, y = y)
-  print(p)
+  if (categorical_outcome) {
+    p <- ggplot(dat, aes(x = .data[[ex]], y = factor(.data[[y]]))) + geom_count()
+  } else {
+    p <- ggplot(dat, aes(x = .data[[ex]], y = .data[[y]])) +
+      geom_point(alpha = 0.4, size = 0.8) +
+      geom_smooth(method = "gam", formula = y ~ s(x, k = 6), color = "steelblue", fill = "steelblue", alpha = 0.2)
+  }
+  print(p + labs(title = paste(y, "by", ex), x = ex, y = y))
 })
 ```
 
@@ -378,6 +411,77 @@ for (g in GROUPING) {
         kable_styling(font_size = 8,
                       latex_options = "HOLD_position"))
   cat("\n\n")
+}
+```
+
+```{r group-composition, results='asis', eval=has_grouping}
+show_composition <- function(g, value) {
+  group <- addNA(factor(dat[[g]]), ifany = TRUE)
+  category <- as.factor(dat[[value]])
+  ng <- nlevels(group)
+  total <- tabulate(group, ng)
+  observed <- tabulate(group[!is.na(category)], ng)
+  latex_name <- function(x) cell_spec(x, format = "latex")
+  labels <- latex_name(levels(group))
+  missing_label <- paste0("(", g, " missing)")
+  while (missing_label %in% levels(group)) missing_label <- paste0(missing_label, "*")
+  labels[is.na(levels(group))] <- latex_name(missing_label)
+  colours <- c("0072B2", "D55E00", "009E73")
+  strip <- function(share, colour) {
+    sprintf("\\textcolor[HTML]{%s}{\\rule{%.3fpt}{1.2ex}}", colour, 48 * share)
+  }
+
+  # Split wide tables into panels. Each bar uses the same 0–100% scale.
+  ids <- seq_len(nlevels(category))
+  panels <- if (length(ids)) split(ids, ceiling(ids / 3)) else list(integer())
+  for (panel in panels) {
+    cells <- data.frame(group = labels, total = total, missing = total - observed)
+    headers <- c(latex_name(g), "Total", "Missing")
+    bars <- rep("", ng)
+    shown <- integer(ng)
+    for (j in seq_along(panel)) {
+      level <- levels(category)[panel[j]]
+      n <- tabulate(group[which(category == level)], ng)
+      share <- n / pmax(observed, 1L)
+      cells[[ncol(cells) + 1L]] <- ifelse(observed > 0,
+        sprintf("%d (%.1f\\%%)", n, 100 * share), as.character(n))
+      headers <- c(headers, paste(strip(0.12, colours[j]), latex_name(level)))
+      bars <- paste0(bars, strip(share, colours[j]))
+      shown <- shown + n
+    }
+    if (length(panels) > 1L) {
+      bars <- paste0(bars, strip((observed - shown) / pmax(observed, 1L), "BBBBBB"))
+    }
+    cells$bar <- ifelse(observed > 0, bars, "---")
+    caption <- paste(latex_name(value), "by", latex_name(g))
+    if (length(panels) > 1L) caption <- paste0(caption, " (grey shows the other categories)")
+    tab <- kable(cells, format = "latex", booktabs = TRUE, longtable = TRUE,
+                 escape = FALSE, col.names = c(headers, "Share"), row.names = FALSE,
+                 caption = caption, align = c("l", rep("r", ncol(cells) - 2L), "l")) |>
+      kable_styling(font_size = 8, latex_options = "repeat_header")
+    for (j in seq_along(panel)) tab <- column_spec(tab, 3L + j, width = "2.3cm")
+    print(tab)
+    cat("\n\n")
+  }
+}
+
+# With two grouping fields, the first supplies rows and the second categories.
+pairs <- list()
+if (has_grouping && length(unique(GROUPING)) == 2L && length(GROUPING) == 2L)
+  pairs <- list(GROUPING)
+if (categorical_outcome && has_grouping) {
+  for (g in setdiff(GROUPING, y)) {
+    # Prefer the outcome as the category when the same two fields were named twice.
+    pairs <- Filter(function(pair) !setequal(pair, c(g, y)), pairs)
+    pairs <- append(pairs, list(c(g, y)))
+  }
+}
+if (length(pairs)) {
+  cat("\n\n## Composition within groups\n\n",
+      "Total includes every observation in a group. Percentages and bars use observations ",
+      "with a recorded category. Missing gives the number without one. ",
+      "A dash in the Share column means the group has no recorded values.\n\n", sep = "")
+  for (pair in pairs) show_composition(pair[1], pair[2])
 }
 ```
 

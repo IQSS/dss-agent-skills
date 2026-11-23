@@ -28,6 +28,7 @@ class LiteratureRun(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.run = Path(self.temp.name)
+        self.checked_source = {"retraction": verify.RetractionCheck("Crossref")}
         self.row = dict(id="10.1234/example", title="Heat exposure and birthweight",
                         author="Smith", year="2024", evidence="abstract", source="crossref")
         for name in ("protocol.md", "unverified.md", "README.md"):
@@ -64,7 +65,7 @@ class LiteratureRun(unittest.TestCase):
         return verify.check(self.run, None, 0.9, offline)
 
     def test_complete_run_with_matching_metadata(self):
-        with patch.object(verify, "fetch", return_value={"title": self.row["title"], "author": "Smith", "year": 2024}):
+        with patch.object(verify, "fetch", return_value={**self.checked_source, "title": self.row["title"], "author": "Smith", "year": 2024}):
             self.assertEqual(self.check(offline=False), ([], []))
 
     def test_missing_column_is_rejected(self):
@@ -86,7 +87,7 @@ class LiteratureRun(unittest.TestCase):
         self.assertTrue(any("unsupported identifier" in p for p in self.check()[0]))
 
     def test_missing_source_metadata_remains_unchecked(self):
-        with patch.object(verify, "fetch", return_value={"title": self.row["title"]}):
+        with patch.object(verify, "fetch", return_value={**self.checked_source, "title": self.row["title"]}):
             problems, unchecked = self.check(offline=False)
         self.assertEqual(problems, [])
         self.assertTrue(any("missing author, year" in p for p in unchecked))
@@ -105,7 +106,7 @@ class LiteratureRun(unittest.TestCase):
         self.assertEqual(unchecked, [])
 
     def test_title_author_and_year_mismatch_detected(self):
-        with patch.object(verify, "fetch", return_value={"title": "A different paper", "author": "Jones", "year": 2020}):
+        with patch.object(verify, "fetch", return_value={**self.checked_source, "title": "A different paper", "author": "Jones", "year": 2020}):
             problems, _ = self.check(offline=False)
         self.assertTrue(any("title does not match" in p for p in problems))
         self.assertTrue(any("first author" in p for p in problems))
@@ -113,11 +114,11 @@ class LiteratureRun(unittest.TestCase):
 
     def test_author_substring_is_not_a_match(self):
         self.write_evidence([dict(self.row, author="Smithson")])
-        with patch.object(verify, "fetch", return_value={"title": self.row["title"], "author": "Smith", "year": 2024}):
+        with patch.object(verify, "fetch", return_value={**self.checked_source, "title": self.row["title"], "author": "Smith", "year": 2024}):
             self.assertTrue(any("first author" in p for p in self.check(offline=False)[0]))
 
     def test_online_first_year_tolerance(self):
-        with patch.object(verify, "fetch", return_value={"title": self.row["title"], "author": "Smith", "year": "2023"}):
+        with patch.object(verify, "fetch", return_value={**self.checked_source, "title": self.row["title"], "author": "Smith", "year": "2023"}):
             self.assertEqual(self.check(offline=False), ([], []))
 
     def test_all_identifier_types_required_in_both_bibliographies(self):

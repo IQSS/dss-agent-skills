@@ -98,10 +98,12 @@ See `template.qmd` for the authoritative list. At a high level:
 - Pairwise structure for top 6 numeric variables (`GGally::ggpairs`)
 - Data-quality flags (constant columns, suspiciously high-cardinality categoricals)
 
+The variable-type and missingness heatmaps show all rows up to 800,000 cells (rows × columns). Above that limit, both use the same reproducible random sample, keeping all columns and as many whole rows as fit. With 20 columns, each heatmap can show 40,000 rows. With 40 columns, it can show 20,000. Each heatmap states how many rows it shows. Use the full-data missingness chart for rates, including missing values too rare to appear in the sample. Counts, summaries, and group comparisons use the whole dataset.
+
 **Parameterized (only if param supplied):**
-- `outcome=<col>` — outcome distribution + by-group splits if `grouping=` is also set
-- `exposures=<col,col,...>` — each exposure × outcome scatter with GAM smoother
-- `grouping=<col,col,...>` — group-size tables, per-group counts, mosaic plots for categorical × categorical
+- `outcome=<col>` shows the outcome distribution. For a categorical outcome, add `grouping=` to compare it within each named group. For example, `outcome=employment_status grouping=region` shows the share in each employment category within each region. Text, factors, logical values, and numeric outcomes coded 0/1 are treated as categorical. Other numeric outcomes retain the histogram and boxplot by the first group.
+- `exposures=<col,col,...>` plots each exposure against the outcome. For a categorical outcome, point size shows how many observations share each combination. For a continuous outcome, the scatterplot includes a GAM smoother.
+- `grouping=<col,col,...>` gives counts for each grouping variable. Supply exactly two to compare the second within the first. For example, `grouping=site,treatment` shows one row per site, with the total number of observations, the number missing treatment status, and the count and percentage in each treatment category. Percentages and the adjacent stacked bars use observations with recorded treatment status. A site with no recorded status has a missing count and no percentage. Wide tables show three categories at a time.
 
 ## Constraints
 

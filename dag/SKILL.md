@@ -22,7 +22,7 @@ Output goes to `outputs/figures/` under the project root by default, or beside t
 |---|---|
 | (none) | Auto-detect: a single `*.dag` under `dags/` (or cwd). If 0 or >1, list candidates and ask. |
 | `<path.dag>` | Use that file. Resolve relative to the project root (supplied project path or repository root) if not absolute. Use other explicitly supplied paths only within the authorized scope. |
-| `--exposure <name>` / `--outcome <name>` | Override / supply the focal contrast when the `.dag` doesn't tag it (see § 3). Names match node labels (quote multi-word). |
+| `--exposure <name>` / `--outcome <name>` | Select the exposure or outcome by its exact graph node name, overriding the corresponding tag. Quote names containing spaces. |
 | `--caption "<text>"` | Override the default caption (the red `MSAS = {…}` listing) with custom text under the figure. |
 | `--out <path>` | Override the output PDF location (§ 7). |
 | `--no-refine` | Render the seeded layout once, skip the iterate loop (fast preview). |
@@ -37,22 +37,24 @@ dagitty format: a `dag { … }` block with an optional `bb="xmin,ymin,xmax,ymax"
 
 A DAG figure answers **one** exposure→outcome question; the roles depend on it.
 
-- **Exposure / outcome:** from the `exposure` / `outcome` tags. If either is missing, take it from `--exposure`/`--outcome`. If still unknown, ask — do not guess the focal contrast.
-- If the `.dag` tags multiple exposures (a teaching graph), this single-figure skill renders **one**; ask which, or take `--exposure`. (Multi-panel "same graph, N exposures" layouts exist but are bespoke — out of scope here.)
+- Resolve each role separately. Use the supplied node name when present. Otherwise use the graph’s tag if it identifies a single node. Ask which node to use if the tag is missing or ambiguous.
+- Use the same selected pair for the adjustment calculation and the figure. If the researcher changes either role during review, repeat the calculation before rendering.
 
 ### 4. Derive node roles and edge classes from the structure
 
 Compute over the parsed graph, given exposure `E` and outcome `O`. Let `D = descendants(E)`, `A = ancestors(O)`.
 
 **Node roles** (→ template style):
-- `exposure` → **exposure**; `outcome` → **outcome**.
+- Selected `E` → **exposure**; selected `O` → **outcome**.
 - nodes tagged `latent`/unobserved → **latent** (a latent node may still sit on the causal path — that affects its *edges*, not its fill).
 - **mediator**: observed node in `D ∩ A` (on a directed E⇝O path). *Do not adjust.*
 - **msas** (adjustment set): the measured confounders to condition on. **Run `dagitty::adjustmentSets()` — mandatory before the confirm round; never derive the MSAS by heuristic.** Use the host's working R invocation (see § Running R below).
   ```r
   library(dagitty)
   g <- dagitty(readLines("<path-to.dag>") |> paste(collapse="\n"))
-  print(adjustmentSets(g, type="minimal"))
+  E <- "<selected exposure node name>"
+  O <- "<selected outcome node name>"
+  print(dagitty::adjustmentSets(g, exposure = E, outcome = O, type = "minimal"))
   ```
   Several minimal sufficient sets may be returned. Use the project's specified set if it is valid, or present the alternatives for selection. An empty set means no adjustment is needed; no valid set means adjustment cannot identify the requested effect under this graph. Never conflate those results. **Proxy confounders** — nodes that belong in the set because a latent common cause links them to `O` via the back-door `E ← proxy ← latent → O` — are correctly surfaced by dagitty and would be missed by any pure-graph heuristic. Give a proxy the `msas` fill but a **grey** edge (see `conf` below).
 - **obs**: remaining observed nodes (present, neither confounder nor mediator).
