@@ -14,8 +14,8 @@
     "library": {
       "coverTitle": "Project setup",
       "icon": "project.svg",
-      "cover": "#bac8ad",
-      "edge": "#6b7d61",
+      "cover": "#d7cbb0",
+      "edge": "#a08c66",
       "steps": [
         "Choose or adapt a project template.",
         "Create the agreed folders and context files.",
@@ -114,8 +114,8 @@
     "library": {
       "coverTitle": "Explore data",
       "icon": "data.svg",
-      "cover": "#c6c4a2",
-      "edge": "#838664",
+      "cover": "#c9c3b9",
+      "edge": "#8c8376",
       "steps": [
         "Check the data and named variables.",
         "Build a report from the Quarto template.",
@@ -214,8 +214,8 @@
     "library": {
       "coverTitle": "Clear writing",
       "icon": "writing.svg",
-      "cover": "#b8c8ba",
-      "edge": "#758d7b",
+      "cover": "#cbb0ba",
+      "edge": "#947380",
       "steps": [
         "Scan the draft for potentially unclear passages.",
         "Read each passage in context.",
