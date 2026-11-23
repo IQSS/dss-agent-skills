@@ -182,10 +182,12 @@
     renderShelves();
     document.querySelector('.library-tools').hidden = false;
     document.querySelector('.library-scene').hidden = false;
-    $('library-index').open = false;
+    // Keep ordinary links available until the interactive library is ready.
+    $('library-index').hidden = true;
   } catch {
     document.querySelector('.library-tools').hidden = true;
     document.querySelector('.library-scene').hidden = true;
+    $('library-index').hidden = false;
     $('library-index').open = true;
   }
 
