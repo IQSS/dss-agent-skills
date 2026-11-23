@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="symbol-data" viewBox="0 0 200 180" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">Prepare data</title>
+  <desc id="desc">Two tables with different column structures merge into one aligned dataset.</desc>
+  <g stroke="#465557" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">
+    <rect x="14" y="18" width="76" height="60" rx="3" fill="#f7f3e9" />
+    <path d="M15 20h74v14H15Z" fill="#c0cbd2" stroke="none" />
+    <path d="M14 34h76M14 49h76M14 64h76M38 19v58M64 19v58" stroke="#84968c" stroke-width="1.8" />
+    <rect x="110" y="18" width="76" height="60" rx="3" fill="#f7f3e9" />
+    <path d="M111 20h74v14h-74Z" fill="#b3bd9d" stroke="none" />
+    <path d="M110 34h76M110 56h76M153 19v58" stroke="#84968c" stroke-width="1.8" />
+    <path d="M52 85C52 104 100 87 100 109M148 85C148 104 100 87 100 109M94 103l6 7 6-7" stroke="#718178" />
+    <rect x="28" y="117" width="144" height="50" rx="3" fill="#f7f3e9" />
+    <path d="M29 119h35v13H29Z" fill="#c0cbd2" stroke="none" />
+    <path d="M64 119h36v13H64Z" fill="#e4d390" stroke="none" />
+    <path d="M100 119h36v13h-36Z" fill="#b3bd9d" stroke="none" />
+    <path d="M136 119h35v13h-35Z" fill="#c0cbd2" stroke="none" />
+    <path d="M28 132h144M28 144h144M28 156h144M64 118v48M100 118v48M136 118v48" stroke="#84968c" stroke-width="1.8" />
+  </g>
+</svg>

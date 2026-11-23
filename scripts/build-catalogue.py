@@ -34,12 +34,48 @@ def bundle(destination, members):
             archive.writestr(info, source.read_bytes())
 
 
+def build_library(catalogue):
+    """Embed catalogue data and ordinary links for the illustrated homepage."""
+    entries = []
+    links = []
+    for item in catalogue:
+        entry = {key: value for key, value in item.items() if key != "library"}
+        entry.update({
+            "coverTitle": item["title"],
+            "icon": "plan.svg",
+            "cover": "#bac8ad",
+            "edge": "#6b7d61",
+            "steps": item["outcomes"][:3],
+            "example": item["prompt"].split("\n", 1)[-1],
+        })
+        entry.update(item.get("library", {}))
+        if not re.fullmatch(r"[a-z0-9-]+\.svg", entry["icon"]):
+            raise ValueError("Invalid library illustration filename")
+        if not (ROOT / "assets/library" / entry["icon"]).is_file():
+            raise ValueError(f"Missing library illustration: {entry['icon']}")
+        entries.append(entry)
+        links.append(
+            f'<li><a href="skills/{item["name"]}.html">'
+            f'{html.escape(item["title"])}</a></li>'
+        )
+    data = json.dumps(entries, ensure_ascii=False).replace("<", "\\u003c")
+    content = (
+        '```{=html}\n<script id="library-data" type="application/json">\n'
+        + data + '\n</script>\n'
+        '<details id="library-index" class="library-index" open>\n'
+        '<summary>Browse all skills as a list</summary>\n<ul>\n'
+        + "\n".join(links) + '\n</ul>\n</details>\n```\n'
+    )
+    (ROOT / "_library.qmd").write_text(content, encoding="utf-8")
+
+
 def build():
     catalogue = json.loads((ROOT / "catalogue.json").read_text())
     manifest = json.loads((ROOT / ".claude-plugin/plugin.json").read_text())
     names = [item["name"] for item in catalogue]
     if len(set(names)) != len(names) or set(names) != {Path(path).name for path in manifest["skills"]}:
         raise ValueError("Catalogue must match the plugin's skill inventory")
+    build_library(catalogue)
     pages, downloads = ROOT / "skills", ROOT / "downloads"
     pages.mkdir(exist_ok=True)
     downloads.mkdir(exist_ok=True)

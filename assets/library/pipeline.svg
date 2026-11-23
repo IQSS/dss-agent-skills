@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 180" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">Reusable code workflow</title>
+  <desc id="desc">A code window contains three connected steps: a data table, a script, and a plotted result.</desc>
+  <g stroke="#465557" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round">
+    <rect x="15" y="19" width="170" height="141" rx="7" transform="translate(3 4)" fill="#465557" stroke="none" opacity=".13" />
+    <rect x="15" y="19" width="170" height="141" rx="7" fill="#f7f3e9" />
+    <path d="M22 19H178Q185 19 185 26V51H15V26Q15 19 22 19Z" fill="#c0cbd2" />
+    <path d="m39 28-8 7 8 7m25-14 8 7-8 7m-9-17-7 20" stroke="#465557" stroke-width="3" />
+    <path d="M96 35h68" stroke="#84968c" stroke-width="4" />
+    <path d="M31 70h33m9 0h40M43 84h54" stroke="#84968c" stroke-width="3" />
+
+    <rect x="27" y="103" width="34" height="35" rx="3" fill="#a6b3a1" />
+    <path d="M27 114h34m-34 12h34m-22-12v24m12-24v24" stroke-width="2" />
+    <path d="M65 120h12m-5-5 5 5-5 5" />
+
+    <rect x="83" y="103" width="34" height="35" rx="3" fill="#e4d390" />
+    <path d="m95 113-7 7 7 7m10-14 7 7-7 7" stroke-width="2.5" />
+    <path d="M121 120h12m-5-5 5 5-5 5" />
+
+    <rect x="139" y="103" width="34" height="35" rx="3" fill="#c0cbd2" />
+    <path d="M146 110v20h21m-17-5 6-8 5 3 6-10" stroke-width="2.3" />
+  </g>
+</svg>

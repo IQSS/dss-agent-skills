@@ -23,6 +23,8 @@ MEMORY.md
 /skills/
 /downloads/
 /_catalogue.qmd
+/_library.qmd
+/site_libs/
 /.env
 /.env.*
 

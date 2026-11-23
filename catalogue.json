@@ -10,7 +10,19 @@
       "Selects a supplied template or adapts a bundled example.",
       "Creates the agreed folder structure and project context files.",
       "Checks that the resulting layout and commands fit the project."
-    ]
+    ],
+    "library": {
+      "coverTitle": "Project setup",
+      "icon": "project.svg",
+      "cover": "#bac8ad",
+      "edge": "#6b7d61",
+      "steps": [
+        "Choose or adapt a project template.",
+        "Create the agreed folders and context files.",
+        "Check the layout and runnable commands."
+      ],
+      "example": "Set up a paper project for a study of school attendance."
+    }
   },
   {
     "name": "review-plan",
@@ -23,7 +35,19 @@
       "Reads the plan against its stated goals and applicable project conventions.",
       "Uses a fresh reviewer when the host supports one and reports the isolation achieved.",
       "Writes a review brief separating demonstrated problems, alternatives, and open questions."
-    ]
+    ],
+    "library": {
+      "coverTitle": "Research plans",
+      "icon": "plan.svg",
+      "cover": "#c8afa4",
+      "edge": "#907568",
+      "steps": [
+        "Read the plan against its research goals.",
+        "Arrange an independent review when supported.",
+        "Report consequential gaps and ways to address them."
+      ],
+      "example": "Review whether this analysis plan can answer the research question."
+    }
   },
   {
     "name": "dag",
@@ -36,7 +60,19 @@
       "Identifies exposure, outcome, and other node roles from the supplied graph.",
       "Computes adjustment sets with dagitty and distinguishes alternatives.",
       "Builds and inspects a PDF, refining labels and connections."
-    ]
+    ],
+    "library": {
+      "coverTitle": "Causal diagrams",
+      "icon": "dag.svg",
+      "cover": "#d4c287",
+      "edge": "#91804c",
+      "steps": [
+        "Read the supplied causal graph.",
+        "Check adjustment sets with dagitty.",
+        "Draw and inspect the figure without changing the graph."
+      ],
+      "example": "Draw this causal diagram and check its adjustment sets."
+    }
   },
   {
     "name": "litsearch",
@@ -49,7 +85,19 @@
       "Records the research question, search scope, queries, and retrieved responses.",
       "Screens retrieved papers and assembles an evidence table.",
       "Checks citation metadata and saves BibTeX and RIS bibliographies."
-    ]
+    ],
+    "library": {
+      "coverTitle": "Literature search",
+      "icon": "literature.svg",
+      "cover": "#adc4c5",
+      "edge": "#62878a",
+      "steps": [
+        "Record the question, sources, and queries.",
+        "Screen papers and build an evidence table.",
+        "Verify citations and save the bibliography."
+      ],
+      "example": "Find studies of maternal heat exposure and birthweight."
+    }
   },
   {
     "name": "eda",
@@ -62,7 +110,19 @@
       "Checks that the input and named variables can be read.",
       "Builds an exploratory report using the supplied Quarto template.",
       "Reports the output location, included sections, and any failures that need attention."
-    ]
+    ],
+    "library": {
+      "coverTitle": "Explore data",
+      "icon": "data.svg",
+      "cover": "#c6c4a2",
+      "edge": "#838664",
+      "steps": [
+        "Check the data and named variables.",
+        "Build a report from the Quarto template.",
+        "Flag data-quality issues and report any failures."
+      ],
+      "example": "Explore birthweight, hot-day exposure, and missing values."
+    }
   },
   {
     "name": "review-analysis",
@@ -75,7 +135,19 @@
       "Traces the implementation against the research requirements.",
       "Examines statistical choices, relevant causal assumptions, and saved diagnostics.",
       "Writes findings with evidence and limitations; a static review does not establish that code runs correctly."
-    ]
+    ],
+    "library": {
+      "coverTitle": "Analysis review",
+      "icon": "review.svg",
+      "cover": "#bbb6cd",
+      "edge": "#827b96",
+      "steps": [
+        "Compare the code with the research specification.",
+        "Check statistical choices and saved diagnostics.",
+        "Report findings, evidence, and limits of the review."
+      ],
+      "example": "Review the analysis against its specification without running or changing it."
+    }
   },
   {
     "name": "targets",
@@ -88,7 +160,19 @@
       "Defines independently runnable stages with explicit dependencies.",
       "Runs and inspects the pipeline using the project's environment.",
       "Diagnoses unnecessary reruns and explains what can resume after interruption."
-    ]
+    ],
+    "library": {
+      "coverTitle": "R pipelines",
+      "icon": "pipeline.svg",
+      "cover": "#acbecb",
+      "edge": "#657d8f",
+      "steps": [
+        "Define stages and their dependencies.",
+        "Run and inspect the pipeline.",
+        "Check what reruns after a change or interruption."
+      ],
+      "example": "Build a targets pipeline for data preparation, models, and figures."
+    }
   },
   {
     "name": "pueue",
@@ -101,7 +185,19 @@
       "Prepares commands with explicit working directories and environments.",
       "Submits the authorized jobs and records their queue IDs.",
       "Checks actual outcomes, distinguishing a finished queue entry from verified output."
-    ]
+    ],
+    "library": {
+      "coverTitle": "Job queues",
+      "icon": "queue.svg",
+      "cover": "#ccae95",
+      "edge": "#957252",
+      "steps": [
+        "Prepare commands and working environments.",
+        "Submit authorized jobs and record their IDs.",
+        "Check logs and expected output files."
+      ],
+      "example": "Queue the simulation commands with two jobs running at a time."
+    }
   },
   {
     "name": "review-prose",
@@ -114,6 +210,18 @@
       "Scans for selected patterns associated with unclear or overly compressed prose.",
       "Reviews each hit in context, discarding false positives.",
       "Reports proposed revisions for the author to consider."
-    ]
+    ],
+    "library": {
+      "coverTitle": "Clear writing",
+      "icon": "writing.svg",
+      "cover": "#b8c8ba",
+      "edge": "#758d7b",
+      "steps": [
+        "Scan the draft for potentially unclear passages.",
+        "Read each passage in context.",
+        "Explain the problem and propose a clearer version."
+      ],
+      "example": "Review this manuscript for clarity and propose revisions."
+    }
   }
 ]

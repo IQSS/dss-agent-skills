@@ -8,6 +8,8 @@ Keep credentials, personal paths, and machine-specific assumptions out of contri
 
 For a new skill, add its directory to `.claude-plugin/plugin.json` and an entry to `catalogue.json`. Include a useful example prompt, requirements, and expected outputs.
 
+An optional `library` object in the catalogue entry supplies a short cover title, an illustration from `assets/library/`, and concise procedure steps for the homepage. Without it, the library uses the skill's title and expected outputs with the default illustration.
+
 Run `just check` and test changed helpers or workflows on a small, appropriate example. Run `just site` to build and check the website. Describe what was tested and what remains untested in the PR. Maintainers review proposed content before merging it.
 
 The code and skill instructions are released under the MIT license.
