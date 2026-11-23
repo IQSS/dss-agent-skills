@@ -39,13 +39,22 @@ Options, appended as `key=value`:
 | `sources=<list>` | `openalex,crossref`. Add `pubmed` for health, `arxiv` for preprints, `ssrn`, `repec`, `nber` for economics and the social sciences. |
 | `from=<year>` `to=<year>` | unbounded |
 | `style=<apa/vancouver/chicago>` | `apa` |
-| `mailto=<email>` | none; when set, sent in the User-Agent to Crossref for the polite pool |
+| `mailto=<email>` | Optional contact address. An address supplied on its own goes to Crossref only. |
+| `mailto-to=crossref\|datacite\|both\|neither` | Services allowed to receive the address for this run. Accept the same choices in plain language. |
 
 Use `out=` when supplied; otherwise preserve the project's documented output convention or use the listed default.
 
 ## Workflow
 
 ### 1. Protocol, before any searching
+
+For an interactive search or verification run, ask once during setup if the researcher has not already given an email preference:
+
+> Crossref and DataCite allow more frequent citation checks when you include a contact email, which can speed up larger searches. Would you like to share an email address with Crossref, DataCite, both, or neither? If you choose a service, which email address should I use?
+
+Use the answer for searches and citation checks, including a lookup that moves from Crossref to DataCite. If the researcher has already chosen a service but omitted the address, ask only for the address. If they choose neither or skip the question, continue without an address.
+
+Skip the question for an offline check, when the caller says to run unattended, or when it is unclear whether anyone can answer. On unattended searches and checks, use any email options supplied at launch. Without an address, continue the run without sending one.
 
 Write `protocol.md` from the user's approved scope:
 question, inclusion and exclusion criteria, date range, languages, the sources to be queried, and
@@ -76,8 +85,9 @@ For exploratory discovery, an explicitly agreed limited search is acceptable; di
 
 ### 3. Deduplicate
 
-By DOI first, then by normalized title and year. Report both counts — records in, records after
-dedup — in `README.md`.
+Group repeated records with the same identifier. When two sources give the same publication different identifiers, compare the title, authors, year, and publication details before combining their records. For a preprint or working paper, look for a link to the published article even if the title or year changed. Check the journal DOI on the repository page or a Crossref `is-preprint-of` or `has-preprint` link. Similar titles and overlapping authors can suggest a pair. If you cannot confirm the link, flag both records for the researcher and keep them separate.
+
+For a confirmed pair, keep both identifiers in `screening.csv` and cite the source that links them. If the study is included, count it once. Choose the version that supplies the evidence under the protocol, mark that record as included, and use its identifier in `evidence.csv` and both bibliographies. Record the other version as a duplicate and name its counterpart. Report the counts before and after deduplication in `README.md`, along with any pairs awaiting review.
 
 ### 4. Screen
 
@@ -86,6 +96,12 @@ at and the reason. Exclusion reasons come from the protocol's criteria, not inve
 
 Bring the borderline set to the user rather than deciding it. State how many were unambiguous and
 how many need a judgement call; the researcher decides those.
+
+Before including a paper, check for a retraction. Crossref links notices in the paper’s `updated-by` list. PubMed uses a “Retraction in” link or a “Retracted Publication” label. Follow up an OpenAlex `is_retracted` flag at the publisher. For an arXiv preprint with a journal DOI, check which version the notice covers.
+
+Record the source, date, and result in `screening.csv`. If the source lacks retraction metadata, check the publisher or repository record. Distinguish “no notice found in this source” from “could not check.”
+
+Show the researcher any notice you find. Keep the paper in `screening.csv` with the notice link and the researcher’s decision and reason. If the decision is pending, leave the paper out of the evidence table. If the researcher includes it, put their reason in `retraction_inclusion_reason` in `evidence.csv` so the flag stays visible.
 
 ### 5. Resolve identifiers and extract evidence
 
@@ -112,10 +128,14 @@ Use `doi={...}`, `pmid={...}`, or `eprint={...}` identifier fields in BibTeX. In
 Write the counts and limitations to `README.md`, then run the bundled checker. Resolve `<skill-directory>` to the installed folder containing this SKILL.md and `verify.py`, not the project's current directory:
 
 ```sh
-python3 "<skill-directory>/verify.py" "<run-dir>" --mailto <email>
+python3 "<skill-directory>/verify.py" "<run-dir>"
 ```
 
-Omit `--mailto` if none was supplied. The checker requires the six evidence columns, compares available source metadata, checks bibliography identifiers and saved-response links, and reconciles screening counts. Exit 1 means a detected problem; exit 2 means a source could not be fully checked. Fix the problem or report the run as incomplete. `--offline` performs structural checks only and must never be reported as live citation verification. The checker does not evaluate study quality or whether the extracted claims match the text.
+When the researcher supplies an address and selects recipients, append `--mailto "<email>"` and `--mailto-to` with their choice. An address alone retains the Crossref-only default. For neither, or without an address, use the command as shown.
+
+The checker compares citation metadata, checks again for retraction notices, checks bibliography identifiers and saved-response links, and reconciles screening counts. Exit 1 means a detected problem, including a retraction with no recorded reason for inclusion. Exit 2 means a source could not be fully checked. Report any retraction checks that required manual review. `--offline` performs structural checks only. Study quality and support for each claim require separate review.
+
+The live checker also flags two included versions when Crossref links their DOIs or arXiv supplies the included article’s DOI. Similar titles and a matching first author can trigger a review even when the publication years differ.
 
 ## Output
 
@@ -143,7 +163,7 @@ One paragraph to the user:
 - **How many records went to `unverified.md`, and whether any came from the model rather than an
   API.** Say this even when the count is zero; it is the number the researcher is being taught to
   look at.
-- What the verifier said.
+- What the verifier found, including any retraction notices, researcher decisions, and outstanding checks.
 - What needs a human: the borderline screening set, and any row whose `evidence` is `title`.
 
 The default deliverable is the search record and evidence table. Provide a synthesis only if requested, grounded in the material actually read.
@@ -153,7 +173,7 @@ The default deliverable is the search record and evidence table. Provide a synth
 - The bundled helper and these instructions are self-contained; research inputs and project conventions come from the authorized task.
 - Use sources and subscriptions the user is permitted to access. Do not assume institutional access or credentials exist. State gaps in coverage.
 - No paywall circumvention. Record what could not be reached as unreachable.
-- Rate-limit politely: identify in the User-Agent when `mailto=` is given, and back off on 429.
+- Put the optional address in the User-Agent header only on requests to the selected services. Keep it out of query URLs and saved search records. Back off on 429 responses.
 - Saved screening counts alone do not establish PRISMA compliance or a systematic review. Describe the actual scope and limitations.
 
 ## Things to NOT do
