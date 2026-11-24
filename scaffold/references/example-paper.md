@@ -1,6 +1,6 @@
 # Example: a research paper project
 
-Adapt this layout to the study, language, and research group's conventions. It does not prescribe a statistical method. Shared file purposes and environment rules are in `example-shared.md`.
+Adapt this layout to the study, language, and researcher's conventions. It does not prescribe a statistical method. Shared file purposes and environment rules are in `example-shared.md`.
 
 ```text
 paper-project/
@@ -42,13 +42,19 @@ Create only the subdirectories the selected scaffold needs. Add the chosen comma
 
 ## Scientific specification and decision log
 
-`SPECIFICATION.md` gives current approved scientific requirements. Populate it from the researcher's decisions, with unresolved choices clearly marked:
+Use the project context file `SPECIFICATION.md` to record the current scientific requirements.
 
 ```markdown
 # Research specification
 
-Last updated: YYYY-MM-DD
-Status: Draft — unresolved choices are listed below.
+Project: [name]
+Version and date: [version, YYYY-MM-DD]
+
+Record the scientific decisions the researcher has made. List open questions
+under “Unresolved decisions” and ask the researcher about them before doing
+work that depends on the answer. When the researcher agrees to a change,
+update the affected requirement here and record the decision and its reason
+in METHODOLOGY.md.
 
 ## Research question and objectives
 

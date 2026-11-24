@@ -40,25 +40,29 @@ resources:
             <div class="welcome"><h2>Pick a book. Explore a procedure.</h2><p>Hover to browse. Click a book to pin it open; click it again to unpin. Each procedure can be reused across projects.</p><span class="welcome-tail" aria-hidden="true"></span></div>
             <img class="agent" src="assets/library/agent.svg" alt="Our robot librarian in a rose coat, holding two interlocking gears" width="170" height="220">
           </div>
-          <article id="open-book" class="open-book" aria-labelledby="skill-title">
+          <div id="open-book" class="book-stack">
+          <template id="skill-page">
+          <article class="open-book">
             <div class="book-pages">
               <div class="left-page">
-                <p id="skill-group" class="page-kicker"></p>
-                <h2 id="skill-title"></h2>
-                <div id="skill-illustration" class="skill-illustration" aria-hidden="true"></div>
-                <p id="skill-summary" class="skill-summary"></p>
-                <div class="book-actions"><a id="open-skill" class="primary-link" href="skills/scaffold.html">Open this skill</a><a id="download-skill" class="download-link" href="downloads/scaffold.zip">Download</a></div>
+                <p class="page-kicker"></p>
+                <h2></h2>
+                <div class="skill-illustration" aria-hidden="true"></div>
+                <p class="skill-summary"></p>
+                <div class="book-actions"><a class="primary-link">Open this skill</a><a class="download-link">Download</a></div>
               </div>
-              <div class="right-page"><button id="pin-book" class="pin-control" type="button" aria-label="Pin this book" aria-pressed="false" title="Pin this book"><svg viewBox="0 0 24 44" aria-hidden="true"><path d="M3 1H21V40L12 33L3 40Z"/></svg></button><p class="page-kicker">The agent’s procedure</p><ol id="skill-steps"></ol><p class="procedure-note">Adapted to your project, using the instructions in <code>SKILL.md</code>.</p></div>
+              <div class="right-page"><button class="pin-control" type="button" aria-label="Pin this book" aria-pressed="false" title="Pin this book"><svg viewBox="0 0 24 44" aria-hidden="true"><path d="M3 1H21V40L12 33L3 40Z"/></svg></button><p class="page-kicker">The agent’s procedure</p><ol class="skill-steps"></ol><p class="procedure-note">Adapted to your project, using the instructions in <code>SKILL.md</code>.</p></div>
             </div>
-            <div class="example"><div class="example-heading"><span>Try it with your agent</span><button id="copy-prompt" type="button">Copy prompt</button></div><code id="skill-command"></code><p id="skill-example"></p></div>
+            <div class="example"><div class="example-heading"><span>Try it with your agent</span><button type="button">Copy prompt</button></div><code></code><p></p></div>
           </article>
+          </template>
+          </div>
           <div class="reading-desk" aria-hidden="true"><span>INSTRUCTIONS · SCRIPTS · TEMPLATES</span></div>
           <p id="selection-status" class="selection-status" role="status" aria-live="polite"></p>
         </section>
       </div>
     </section>
-    <section class="use-skills" aria-label="Using the collection"><p><strong>Use the same skill in your next project.</strong> Install the collection once, then tell the agent which skill to use and what you want it to do.</p><a href="installation.html">Installation and examples</a></section>
+    <section class="use-skills" aria-label="Using the collection"><p><strong>Use the same skill in your next project.</strong> Install the collection once, then tell the agent which skill to use and what you want it to do. For worked research examples, see the <a href="https://iqss.github.io/dss-agentic-research/">research guide</a>. For tool setup, see the <a href="https://iqss.github.io/dss-agentic-toolkit/">companion toolkit</a>.</p><a href="installation.html">Installation and examples</a></section>
 
 ```
 

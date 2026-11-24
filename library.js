@@ -3,6 +3,7 @@
 
   const $ = (id) => document.getElementById(id);
   let skills = [];
+  const pages = new Map();
   let activeGroup = 'All skills';
   let pinnedName = null;
   let shownName = '';
@@ -10,29 +11,55 @@
   const PAGE_SIZE = 9;
 
   const normalize = (value) => value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  function createPage(skill) {
+    const page = $('skill-page').content.firstElementChild.cloneNode(true);
+    const title = page.querySelector('h2');
+    title.id = `skill-title-${skill.name}`;
+    title.textContent = skill.title;
+    page.setAttribute('aria-labelledby', title.id);
+    page.querySelector('.left-page .page-kicker').textContent = skill.group;
+    page.querySelector('.skill-summary').textContent = skill.summary;
+    const steps = page.querySelector('.skill-steps');
+    for (const text of skill.steps) {
+      const li = document.createElement('li');
+      li.textContent = text;
+      steps.append(li);
+    }
+    const icon = document.createElement('img');
+    icon.src = `assets/library/${skill.icon}`;
+    icon.alt = '';
+    page.querySelector('.skill-illustration').append(icon);
+    const open = page.querySelector('.primary-link');
+    open.href = `skills/${skill.name}.html`;
+    open.setAttribute('aria-label', `Open ${skill.title}`);
+    const download = page.querySelector('.download-link');
+    download.href = `downloads/${skill.name}.zip`;
+    download.setAttribute('aria-label', `Download the ${skill.name} skill`);
+    page.querySelector('.example code').textContent = skill.prompt.split('\n')[0];
+    page.querySelector('.example p').textContent = skill.example;
+    page.querySelector('.pin-control').addEventListener('click', () => togglePin(skill.name, false));
+    const copy = page.querySelector('.example-heading button');
+    copy.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(skill.prompt);
+        copy.textContent = 'Copied';
+      } catch {
+        copy.textContent = 'Copy unavailable';
+      }
+    });
+    page.inert = true;
+    pages.set(skill.name, page);
+    $('open-book').append(page);
+  }
+
   function displaySkill(name) {
-    const skill = skills.find(item => item.name === name);
-    if (!skill) return;
+    const page = pages.get(name);
+    if (!page) return;
     if (shownName !== name) {
-      $('skill-title').textContent = skill.title;
-      $('skill-group').textContent = skill.group;
-      $('skill-summary').textContent = skill.summary;
-      $('skill-steps').replaceChildren(...skill.steps.map(text => {
-        const li = document.createElement('li');
-        li.textContent = text;
-        return li;
-      }));
-      const icon = document.createElement('img');
-      icon.src = `assets/library/${skill.icon}`;
-      icon.alt = '';
-      $('skill-illustration').replaceChildren(icon);
-      $('open-skill').href = `skills/${skill.name}.html`;
-      $('open-skill').setAttribute('aria-label', `Open ${skill.title}`);
-      $('download-skill').href = `downloads/${skill.name}.zip`;
-      $('download-skill').setAttribute('aria-label', `Download the ${skill.name} skill`);
-      $('skill-command').textContent = skill.prompt.split('\n')[0];
-      $('skill-example').textContent = skill.example;
-      $('copy-prompt').textContent = 'Copy prompt';
+      const previous = pages.get(shownName);
+      if (previous) previous.inert = true;
+      page.inert = false;
+      page.querySelector('.example-heading button').textContent = 'Copy prompt';
       shownName = name;
     }
     document.querySelectorAll('.skill-book').forEach(book => {
@@ -40,12 +67,13 @@
     });
     const pinned = pinnedName === shownName;
     const label = pinned ? 'Unpin this book' : 'Pin this book';
-    $('pin-book').setAttribute('aria-pressed', String(pinned));
-    $('pin-book').setAttribute('aria-label', label);
-    $('pin-book').title = label;
+    const pin = page.querySelector('.pin-control');
+    pin.setAttribute('aria-pressed', String(pinned));
+    pin.setAttribute('aria-label', label);
+    pin.title = label;
     $('selection-status').textContent = pinned
-      ? `${skill.name} · pinned open · click the book or bookmark to unpin`
-      : `${skill.name} · hover to explore, click to pin`;
+      ? `${name} · pinned open · click the book or bookmark to unpin`
+      : `${name} · hover to explore, click to pin`;
   }
 
   function togglePin(name, scroll = true) {
@@ -163,19 +191,9 @@
     renderShelves();
     $('search').focus();
   });
-  $('pin-book').addEventListener('click', () => togglePin(shownName, false));
-  $('copy-prompt').addEventListener('click', async () => {
-    const skill = skills.find(item => item.name === shownName);
-    try {
-      await navigator.clipboard.writeText(skill.prompt);
-      $('copy-prompt').textContent = 'Copied';
-    } catch {
-      $('copy-prompt').textContent = 'Copy unavailable';
-    }
-  });
-
   try {
     skills = JSON.parse($('library-data').textContent);
+    skills.forEach(createPage);
     const hash = location.hash.slice(1);
     if (skills.some(item => item.name === hash)) pinnedName = hash;
     renderFilters();
