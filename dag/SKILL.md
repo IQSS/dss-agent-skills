@@ -113,6 +113,8 @@ This is the core. Build, look, adjust, repeat — do not ship the seeded layout 
 
 ### 8. Report
 
+Include the software citation for the adjustment-set calculation in every report: `dagitty` ([Textor et al., 2016](https://doi.org/10.1093/ije/dyw341)).
+
 One short paragraph: the exposure→outcome question rendered, the role tally (e.g. "1 exposure, 1 outcome, 4 in adjustment set, 2 mediators, 2 latent"), where the `.tex` and PDF landed, and how many refine passes it took.
 
 ## Things to NOT do
