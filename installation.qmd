@@ -31,9 +31,25 @@ Each [skill page](index.qmd) has a ZIP download containing that skill and its su
 
 The collection follows the [Agent Skills format](https://agentskills.io/specification). Apps differ in how they find and invoke skills, and in whether they can launch separate reviewer sessions. Ask the agent to identify the supported installation location and any missing capabilities before using a downloaded skill.
 
-## Update the collection
+## Update or remove the library {#update-the-collection}
 
-Use Claude Code's plugin management controls to update the installed plugin. With individual downloads, replace the installed folder with the newer reviewed version, preserving any local adaptations you need.
+In a Claude Code session, enter `/plugin`, open the **Installed** tab, and select `dss-agent-skills`. Choose **Update now** to get the latest version or **Uninstall** to remove the library.
+
+If you prefer the terminal, use this command to update the library:
+
+```bash
+claude plugin update dss-agent-skills@dss-agent-skills
+```
+
+To remove the library, use:
+
+```bash
+claude plugin uninstall dss-agent-skills@dss-agent-skills
+```
+
+If you installed the plugin for a single project, run the command from that project and add `--scope project` or `--scope local`, matching the scope you chose at installation. To load the change in an open Claude Code session, enter `/reload-plugins`.
+
+If you downloaded an individual skill as a ZIP, update it by replacing its installed folder with the newer version, keeping any local adaptations you need. To remove it, delete that skill’s installed folder.
 
 ## What has been checked
 

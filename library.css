@@ -580,7 +580,20 @@ body.quarto-dark .library-page {
   filter:drop-shadow(0 3px 0 #52695f13)
 }
 
+.library-page .book-stack {
+  display:grid;
+  grid-template-columns:minmax(0,1fr)
+}
+
+/* All entries share one grid cell so the tallest book sets the height at this width. */
+.library-page .open-book[inert] {
+  visibility:hidden
+}
+
 .library-page .open-book {
+  grid-area:1 / 1;
+  display:grid;
+  grid-template-rows:1fr auto;
   position:relative;
   color:var(--paper-ink);
   background:var(--book-cover);
@@ -722,14 +735,14 @@ body.quarto-dark .library-page {
   margin-bottom:21px
 }
 
-.library-page #skill-steps {
+.library-page .skill-steps {
   padding:0;
   margin:0;
   list-style:none;
   counter-reset:steps
 }
 
-.library-page #skill-steps li {
+.library-page .skill-steps li {
   counter-increment:steps;
   position:relative;
   padding-left:31px;
@@ -738,7 +751,7 @@ body.quarto-dark .library-page {
   line-height:1.4
 }
 
-.library-page #skill-steps li:before {
+.library-page .skill-steps li:before {
   content:counter(steps);
   position:absolute;
   left:0;
@@ -952,7 +965,7 @@ body.quarto-dark .library-page {
 }
 
 .library-page .skill-summary,
-.library-page #skill-steps li {
+.library-page .skill-steps li {
   font-size:15px
 }
 
@@ -1086,7 +1099,7 @@ body.quarto-dark .library-page {
 }
 
 .library-page .skill-summary,
-.library-page #skill-steps li {
+.library-page .skill-steps li {
   font-size:17px
 }
 
@@ -1316,7 +1329,7 @@ body.quarto-dark .library-page {
   font-size:12px
 }
 
-.library-page #skill-steps li {
+.library-page .skill-steps li {
   font-size:17px;
   margin-bottom:17px
 }

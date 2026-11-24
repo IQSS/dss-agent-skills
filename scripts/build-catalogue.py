@@ -39,7 +39,7 @@ def build_library(catalogue):
     entries = []
     links = []
     for item in catalogue:
-        entry = {key: value for key, value in item.items() if key != "library"}
+        entry = {key: value for key, value in item.items() if key not in {"guide", "library"}}
         entry.update({
             "coverTitle": item["title"],
             "icon": "plan.svg",
@@ -98,6 +98,8 @@ def build():
             ":::", ""
         ])
         outcomes = "\n".join("- " + text for text in item["outcomes"])
+        if item.get("guide"):
+            outcomes += "\n\n" + item["guide"]
         page = (
             "---\ntitle: " + json.dumps(item["title"]) + "\n---\n\n" +
             item["summary"] + "\n\n" +

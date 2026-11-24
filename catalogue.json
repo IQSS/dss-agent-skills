@@ -1,6 +1,7 @@
 [
   {
     "name": "scaffold",
+    "guide": "For an example of setting up a new project, see [Chapter 6: Organize your research projects](https://iqss.github.io/dss-agentic-research/chapters/project-organization.html#scaffold-project) in *Doing Research with AI Agents*.",
     "group": "Set up and plan",
     "title": "Set up a project",
     "summary": "Ask the agent to create or adapt folders, project guidance, and runnable commands for a new piece of work.",
@@ -26,6 +27,7 @@
   },
   {
     "name": "review-plan",
+    "guide": "For an example of reviewing a plan before analysis begins, see [Chapter 7: Give the agent context for your project](https://iqss.github.io/dss-agentic-research/chapters/project-context.html#review-project-plan) in *Doing Research with AI Agents*.",
     "group": "Set up and plan",
     "title": "Review a research plan",
     "summary": "Find consequential gaps, unsupported assumptions, and missing checks before committing to the work.",
@@ -76,6 +78,7 @@
   },
   {
     "name": "litsearch",
+    "guide": "For a worked literature search, see [Chapter 11: Find and assess research literature](https://iqss.github.io/dss-agentic-research/chapters/literature.html) in *Doing Research with AI Agents*.",
     "group": "Explore and assess",
     "title": "Find research literature",
     "summary": "Keep the queries, screening decisions, reading limits, and citation checks behind a literature search.",
@@ -101,6 +104,7 @@
   },
   {
     "name": "eda",
+    "guide": "For an example of checking incoming data, see [Chapter 12: Bring data into the project](https://iqss.github.io/dss-agentic-research/chapters/data-acquisition.html#identify-inputs) in *Doing Research with AI Agents*.",
     "group": "Explore and assess",
     "title": "Explore a dataset",
     "summary": "Generate a first-look report on distributions, missing values, and relationships worth investigating.",
@@ -126,6 +130,7 @@
   },
   {
     "name": "review-analysis",
+    "guide": "For an example of checking analysis code against the study specification, see [Chapter 13: Build a modular analysis workflow](https://iqss.github.io/dss-agentic-research/chapters/research-workflows.html#investigate-workflow-results) in *Doing Research with AI Agents*.",
     "group": "Explore and assess",
     "title": "Review an analysis",
     "summary": "Check whether analysis code follows the scientific requirements and supports the quantities it reports.",
@@ -151,6 +156,7 @@
   },
   {
     "name": "targets",
+    "guide": "For a worked example of rerunning the steps affected by a change, see [Chapter 8: Rerun only affected steps: targets and Snakemake](https://iqss.github.io/dss-agentic-toolkit/chapters/pipeline-dependencies.html) in *Extending Your Agent’s Toolkit*.",
     "group": "Run and refine",
     "title": "Build a repeatable R pipeline",
     "summary": "Organize an R analysis into stages so completed, unchanged work can be reused when the pipeline runs again.",
@@ -176,6 +182,7 @@
   },
   {
     "name": "pueue",
+    "guide": "For an example of running and checking a batch of queued jobs, see [Chapter 9: Keep unattended jobs moving: pueue](https://iqss.github.io/dss-agentic-toolkit/chapters/job-queues.html) in *Extending Your Agent’s Toolkit*.",
     "group": "Run and refine",
     "title": "Queue computational jobs",
     "summary": "Let independent computational jobs run with controlled concurrency while the agent tracks progress and outcomes.",
@@ -201,6 +208,7 @@
   },
   {
     "name": "review-prose",
+    "guide": "For an example of revising a manuscript draft, see [Chapter 18: Write and revise the manuscript](https://iqss.github.io/dss-agentic-research/chapters/research-writing.html#draft-and-revise-one-section-at-a-time) in *Doing Research with AI Agents*.",
     "group": "Run and refine",
     "title": "Review prose for clarity",
     "summary": "Find passages readers have to decode and assess proposed revisions in the surrounding paragraph.",
