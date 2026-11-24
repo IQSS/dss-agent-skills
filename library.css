@@ -1435,7 +1435,7 @@ body:not(.quarto-dark) .library-page .welcome-tail {
 }
 
 body:has(.library-page) #title-block-header { display: none; }
-.library-page { padding-top: 1px; }
+.library-page { padding-top: 1px; padding-bottom: 8px; }
 .library-page [hidden] { display: none !important; }
 .library-page h1, .library-page h2 { border: 0; padding: 0; }
 .library-page .reading-station { top: 130px; }
