@@ -809,6 +809,12 @@ body.quarto-dark .library-page {
   font-size:12px
 }
 
+@media(hover:hover) {
+.library-page .example-heading button:hover {
+  background-color:color-mix(in srgb,var(--book-cover) 32%,var(--paper-second))
+}
+}
+
 .library-page .example code {
   display:block;
   background:transparent;
