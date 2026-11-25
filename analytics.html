@@ -1,0 +1,24 @@
+<script>
+  window.goatcounter = {no_onload: location.hostname !== 'iqss.github.io'};
+
+  if (!window.goatcounter.no_onload) {
+    function countDownload(event) {
+      if (event.defaultPrevented || (event.type === 'auxclick' && event.button !== 1)) return;
+      const link = event.target.closest?.('a[href]');
+      if (!link || link.origin !== location.origin) return;
+      const archive = /^\/dss-agent-skills\/downloads\/([a-z0-9-]+)\.zip$/.exec(link.pathname);
+      if (!archive) return;
+
+      const name = archive[1];
+      const count = () => window.goatcounter.count({
+        event: true, path: 'download-' + name, title: 'Download ' + name + '.zip', no_session: true,
+      });
+      if (window.goatcounter.count) count();
+      else document.querySelector('script[data-goatcounter]').addEventListener('load', count, {once: true});
+    }
+
+    document.addEventListener('click', countDownload);
+    document.addEventListener('auxclick', countDownload);
+  }
+</script>
+<script data-goatcounter="https://dss-agent-skills.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
