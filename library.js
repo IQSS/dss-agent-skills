@@ -81,7 +81,12 @@
     history.replaceState(null, '', `${location.pathname}${location.search}${pinnedName ? '#' + pinnedName : ''}`);
     displaySkill(name);
     if (pinnedName && scroll && matchMedia('(max-width: 930px)').matches) {
-      $('open-book').scrollIntoView({block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'});
+      const book = pages.get(name);
+      const headerHeight = document.querySelector('header.fixed-top')?.offsetHeight ?? 0;
+      window.scrollTo({
+        top: window.scrollY + book.getBoundingClientRect().top - headerHeight - 12,
+        behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'
+      });
     }
   }
 
